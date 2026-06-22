@@ -837,7 +837,7 @@ public function getAllSoalSK() {
             ->where('a.materi',$materi)
             ->where('a.created_user_id',$user_id)
             ->where('a.status_cd','finish')
-            ->whereNotIn('a.group_id',[10])
+            ->whereNotIn('a.group_id',[8])
             ->groupBy('c.group_soal_id, c.group_nm, b.pembahasan_img, b.soal_img, a.pilihan_nm, b.kunci, b.no_soal, b.pembahasan, b.soal_nm, b.materi')
             ->orderBy('c.group_soal_id', 'ASC')
             ->orderBy('b.no_soal', 'ASC')
@@ -940,7 +940,7 @@ public function getAllSoalSK() {
             ->join(
                 'soal c',
                 'c.kolom_id = k.kolom_id
-                AND c.group_id = 10
+                AND c.group_id = 8
                 AND c.status_cd = "normal"
                 AND c.materi = '.$this->db->escape($materi_id).'
                 AND c.sk_group_id = '.$this->db->escape($sk_group_id),
