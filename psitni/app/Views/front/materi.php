@@ -38,10 +38,11 @@
                                     $query = $db->query("SELECT * FROM respon WHERE materi = $key->materi_id AND created_user_id = $user_id ")->getResultArray();
                                     if (count($query)>0) {
                                         // }
-                                        $click = base_url()."/tryout/hasiltryout/".$key->materi_id."/10";
+                                        $click = base_url()."/tryout/hasiltryout/".$key->materi_id."/8";
                                         $class_bg = "bg-green";
                                     } else {
-                                        $click = base_url()."/materi/pilihanMateri/".$key->materi_id."/1";
+                                        $click = base_url()."/materi/riwayathidup/".$key->materi_id."/1";
+                                        // $click = base_url()."/materi/pilihanMateri/".$key->materi_id."/1";
                                         $class_bg = "bg-gray";
                                     }
                             ?>

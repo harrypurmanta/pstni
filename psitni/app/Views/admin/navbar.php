@@ -32,6 +32,9 @@
           <li class="nav-item">
             <a href="<?= base_url() ?>/admin/users" class="nav-link" style="color:#ffffff;">Users</a>
           </li>
+          <li class="nav-item">
+            <a href="<?= base_url() ?>/admin/token" class="nav-link" style="color:#ffffff;">Token</a>
+          </li>
         </ul>
 
         <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">

@@ -113,7 +113,7 @@ class Soalmodel extends Model
         return $this->db->table('group_soal')
                         ->select('group_soal_id,group_nm')
                         ->where('status_cd','normal')
-                        ->orderBy('urutan', 'ASC')
+                        // ->orderBy('urutan', 'ASC')
                         ->get();
     }
 
@@ -813,7 +813,7 @@ public function getAllSoalSK() {
                         // ->where('a.status_cd', 'finish')
                         ->whereNotIn('a.group_id', [10])
                         ->groupBy('a.group_id')
-                        ->orderBy('c.urutan', 'ASC')
+                        // ->orderBy('c.urutan', 'ASC')
                         ->get();
     }
 

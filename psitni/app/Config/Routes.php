@@ -93,6 +93,10 @@ $routes->post('admin/hasil/latihanmateri/(:num)/(:num)', '\App\Controllers\Admin
 $routes->get('admin/hasil/hasillatihanmateri/(:num)/(:num)/(:num)', '\App\Controllers\Admin\Hasil::hasillatihanmateri/$1/$2/$3');
 $routes->post('admin/hasil/hasillatihanmateri/(:num)/(:num)/(:num)', '\App\Controllers\Admin\Hasil::hasillatihanmateri/$1/$2/$3');
 
+$routes->get('admin/token', '\App\Controllers\Admin\Token::index');
+$routes->post('admin/token/simpan', '\App\Controllers\Admin\Token::simpan');
+$routes->post('admin/token/hapus', '\App\Controllers\Admin\Token::hapus');
+
 
 $routes->get('jawaban/showjawaban', '\App\Controllers\Admin\Jawaban::showjawaban');
 $routes->post('jawaban/showjawaban', '\App\Controllers\Admin\Jawaban::showjawaban');
@@ -162,6 +166,8 @@ $routes->post('jawabanlatihan/simpanjawaban', '\App\Controllers\Admin\Jawabanlat
 
 
 $routes->get('materi', '\App\Controllers\Materi::index');
+$routes->get('materi/riwayathidup/(:num)/(:num)', '\App\Controllers\Materi::riwayathidup/$1/$2');
+$routes->post('materi/simpanriwayathidup', '\App\Controllers\Materi::simpanriwayathidup');
 $routes->get('latihan', '\App\Controllers\Latihan::index');
 $routes->get('latihan/petunjuksoal', '\App\Controllers\Latihan::petunjuksoal');
 $routes->post('latihan/petunjuksoal', '\App\Controllers\Latihan::petunjuksoal');

@@ -16,99 +16,99 @@
 
     <style>
         * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-image: url("./images/bg/bg-body.jpg");
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-}
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url("./images/bg/bg-body.jpg");
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
 
-.container {
-    display: flex;
-    width: 100%;
-    /* height: 100%; */
-    /* max-width: 1200px; */
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+        .container {
+            display: flex;
+            width: 100%;
+            /* height: 100%; */
+            /* max-width: 1200px; */
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-.image-column {
-    flex: 3;
-    overflow: hidden;
-}
+        .image-column {
+            flex: 3;
+            overflow: hidden;
+        }
 
-.image-column img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+        .image-column img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.form-column {
-    flex: 2;
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
+        .form-column {
+            flex: 2;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-h2 {
-    margin-bottom: 20px;
-    text-align: center;
-}
+        h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-label {
-    margin-bottom: 5px;
-    font-weight: bold;
-}
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
 
-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-button:hover {
-    background-color: #0056b3;
-}
+        button:hover {
+            background-color: #0056b3;
+        }
 
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
 
-    .image-column {
-        flex: 1;
-    }
+            .image-column {
+                flex: 1;
+            }
 
-    .form-column {
-        flex: 1;
-        padding: 20px;
-    }
-}
+            .form-column {
+                flex: 1;
+                padding: 20px;
+            }
+        }
 
     </style>
 
@@ -128,7 +128,7 @@ button:hover {
                 <input type="password" id="password" class="form-control" name="password" required>
                 
                 <button type="submit">Login</button>
-                <button type="button" onclick="location.href='login/register'">Register</button>
+                <!-- <button type="button" onclick="location.href='login/register'">Register</button> -->
             </form>
         </div>
     </div>

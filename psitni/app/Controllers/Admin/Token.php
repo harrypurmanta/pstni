@@ -1,27 +1,20 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
-use App\Models\Usersmodel;
 use App\Models\Soalmodel;
-use App\Models\Tokenmodel;
-use TCPDF;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Token extends BaseController
 {
-    protected $usermodel;
-    protected $soalmodel;
-    protected $tokenmodel;
     protected $session;
+    protected $soalmodel;
+
     public function __construct()
-	{
-		$this->session = \Config\Services::session();
-        $this->usermodel = new Usersmodel();
+    {
+        $this->session = \Config\Services::session();
         $this->soalmodel = new Soalmodel();
-        $this->tokenmodel = new Tokenmodel();
         $this->ensureTokenTable();
-	}
+    }
 
     private function ensureTokenTable() {
         $db = \Config\Database::connect();
@@ -81,48 +74,77 @@ class Token extends BaseController
         }
     }
 
-
-    public function checktoken()
+    public function index()
     {
         if ($this->session->get("user_nm") == "") {
-			return redirect('/');
-		} else {
-            $token = $this->request->getPost('token');
-            $materi_id = $this->request->getPost('materi_id');
-            
-            $db = \Config\Database::connect();
-            $check = $db->table('token')
-                        ->where('token', $token)
-                        ->where('materi_id', $materi_id)
-                        ->where('status_cd', 'normal')
-                        ->get()
-                        ->getResult();
-                        
-            if (count($check) > 0) {
-                $ret = "sukses";
-            } else {
-                $ret = "gagal";
-            }
-            echo json_encode($ret);
+            return redirect()->to('/');
         }
+
+        $db = \Config\Database::connect();
+        $tokens = $db->table('token a')
+                     ->select('a.*, b.materi_nm')
+                     ->join('materi b', 'b.materi_id = a.materi_id', 'left')
+                     ->where('a.status_cd', 'normal')
+                     ->get()
+                     ->getResult();
+
+        $materi = $db->table('materi')
+                     ->where('status_cd', 'normal')
+                     ->get()
+                     ->getResult();
+
+        $data = [
+            'tokens' => $tokens,
+            'materi' => $materi
+        ];
+
+        return view('admin/token', $data);
     }
 
-    public function InsertNoTest() {
-        $notest = $this->request->getPost('notest');
-        $group_id = $this->request->getPost('group_id');
-       
-        $dataexam = [
-            "group_id" => $group_id,
-            "materi_id" => 1,
-            "user_id" => $this->session->user_id,
-            "no_antrian" => $notest,
-        ];
-        $insertexam = $this->soalmodel->insertexam($dataexam);
-        if ($insertexam) {
-            $ret = "sukses"; 
-        } else {
-            $ret = "gagal";
+    public function simpan()
+    {
+        if ($this->session->get("user_nm") == "") {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Session expired']);
         }
-        echo json_encode($ret);
+
+        $token = $this->request->getPost('token');
+        $materi_id = $this->request->getPost('materi_id');
+
+        if (empty($token) || empty($materi_id)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Token dan Materi harus diisi']);
+        }
+
+        $db = \Config\Database::connect();
+        
+        $data = [
+            'token' => strtoupper(trim($token)),
+            'materi_id' => $materi_id,
+            'status_cd' => 'normal',
+            'created_dttm' => date('Y-m-d H:i:s'),
+            'created_user' => $this->session->get('user_nm')
+        ];
+
+        $db->table('token')->insert($data);
+
+        return $this->response->setJSON(['status' => 'sukses']);
+    }
+
+    public function hapus()
+    {
+        if ($this->session->get("user_nm") == "") {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Session expired']);
+        }
+
+        $token_id = $this->request->getPost('token_id');
+        if (empty($token_id)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Token ID tidak valid']);
+        }
+
+        $db = \Config\Database::connect();
+        $db->table('token')
+           ->where('token_id', $token_id)
+           ->update(['status_cd' => 'nullified']);
+
+        return $this->response->setJSON(['status' => 'sukses']);
     }
 }

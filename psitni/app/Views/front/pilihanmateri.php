@@ -36,10 +36,17 @@
                                 ?>
                                 <p>Saat anda klik tombol <b><i>Mulai</i></b>, Maka akan langsung masuk ke Pengerjaan soal Selamat Mengerjakan</p>
                                 <?php
-                                    if ($group[0]->group_soal_id == 8) {
+                                    if ($materi_id == 1) {
+                                        // Materi 1: Minta token
                                         echo "<a onclick='showtoken(".$group[0]->group_soal_id.", ".$materi_id.")' href='#' class='btn btn-success' style='font-size:18px;'>Mulai</a>";
                                     } else {
-                                        echo "<a onclick='showtoken(".$group[0]->group_soal_id.", ".$materi_id.")' href='#' class='btn btn-success' style='font-size:18px;'>Mulai</a>";
+                                        // Selain materi 1: Langsung masuk tryout tanpa token
+                                        if ($group[0]->group_soal_id == 8) {
+                                            $directUrl = base_url() . "/tryout/ujianPauli/" . $materi_id . "/" . $group[0]->group_soal_id;
+                                        } else {
+                                            $directUrl = base_url() . "/tryout/ujian/" . $materi_id . "/" . $group[0]->group_soal_id;
+                                        }
+                                        echo "<a href='".$directUrl."' class='btn btn-success' style='font-size:18px;'>Mulai</a>";
                                     }
                                 ?>
                             </div>
