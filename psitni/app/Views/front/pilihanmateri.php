@@ -36,7 +36,7 @@
                                 ?>
                                 <p>Saat anda klik tombol <b><i>Mulai</i></b>, Maka akan langsung masuk ke Pengerjaan soal Selamat Mengerjakan</p>
                                 <?php
-                                    if ($materi_id == 1) {
+                                    if ($materi_id == 1 && $group[0]->group_soal_id == 1) {
                                         // Materi 1: Minta token
                                         echo "<a onclick='showtoken(".$group[0]->group_soal_id.", ".$materi_id.")' href='#' class='btn btn-success' style='font-size:18px;'>Mulai</a>";
                                     } else {

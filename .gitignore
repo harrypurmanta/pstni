@@ -1,22 +1,22 @@
 # === CI4 System ===
-kedinasan/writable/*
+psitni/writable/*
 !/writable/.gitkeep
 
 # === Environment ===
 .env
 
 # === Composer ===
-kedinasan/vendor/
+psitni/vendor/
 
 # === Cache & Logs ===
-kedinasan/writable/cache/*
-kedinasan/writable/logs/*
-kedinasan/writable/debugbar/*
-kedinasan/writable/session/*
-kedinasan/writable/uploads/*
+psitni/writable/cache/*
+psitni/writable/logs/*
+psitni/writable/debugbar/*
+psitni/writable/session/*
+psitni/writable/uploads/*
 
 # === User Uploads (optional) ===
-kedinasan/public/uploads/*
+psitni/public/uploads/*
 !/public/uploads/.gitkeep
 
 # === OS & Editor ===

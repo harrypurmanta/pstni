@@ -517,7 +517,7 @@ class Soal extends BaseController
                if ($img->isValid() && ! $img->hasMoved()){
                     $newName = $img->getClientName();
                     $img->move("../public/images/soal/materi/$materi_id", $newName);
-                    copy("../public/images/soal/materi/$materi_id/$newName","../public/images/soal/materi/$materi_id/besar/$newName");
+                    copy("../public/images/soal/materi/$materi_id/$newName","../public/images/soal/materi/$materi_id/group/$group_id/besar/$newName");
                    }
              }
         }
@@ -590,7 +590,7 @@ class Soal extends BaseController
                 $imgA = $imagefile['jawaban_img_A'][0];
                 if ($imgA->isValid() && ! $imgA->hasMoved()){
                      $jawaban_img_A = $imgA->getClientName();
-                     $imgA->move("../public/images/jawaban/materi/$materi_id", $jawaban_img_A);
+                     $imgA->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_A);
                  }
                  $dataA = [
                     'soal_id' => $soal_id,
@@ -614,7 +614,7 @@ class Soal extends BaseController
                     $imgB = $imagefile['jawaban_img_B'][0];
                     if ($imgB->isValid() && ! $imgB->hasMoved()){
                          $jawaban_img_B = $imgB->getClientName();
-                         $imgB->move("../public/images/jawaban/materi/$materi_id", $jawaban_img_B);
+                         $imgB->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_B);
                      }
                      $dataB = [
                         'soal_id' => $soal_id,
@@ -638,7 +638,7 @@ class Soal extends BaseController
                         $imgC = $imagefile['jawaban_img_C'][0];
                         if ($imgC->isValid() && ! $imgC->hasMoved()){
                              $jawaban_img_C = $imgC->getClientName();
-                             $imgC->move("../public/images/jawaban/materi/$materi_id", $jawaban_img_C);
+                             $imgC->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_C);
                          }
                          $dataC = [
                             'soal_id' => $soal_id,
@@ -662,7 +662,7 @@ class Soal extends BaseController
                             $imgD = $imagefile['jawaban_img_D'][0];
                             if ($imgD->isValid() && ! $imgD->hasMoved()){
                                  $jawaban_img_D = $imgD->getClientName();
-                                 $imgD->move("../public/images/jawaban/materi/$materi_id", $jawaban_img_D);
+                                 $imgD->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_D);
                              }
                              $dataD = [
                                 'soal_id' => $soal_id,
@@ -688,7 +688,7 @@ class Soal extends BaseController
                                 $imgE = $imagefile['jawaban_img_E'][0];
                                 if ($imgE->isValid() && ! $imgE->hasMoved()){
                                      $jawaban_img_E = $imgE->getClientName();
-                                     $imgE->move("../public/images/jawaban/materi/$materi_id", $jawaban_img_E);
+                                     $imgE->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_E);
                                  }
                                  $dataE = [
                                     'soal_id' => $soal_id,

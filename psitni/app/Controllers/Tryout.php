@@ -174,7 +174,7 @@ class Tryout extends BaseController
 
                     if ($group_id == 7) {
                         $jawaban = "<div class='btn col-md-12' style='margin-top:10px;margin-bottom:10px;background-color:#aeaebb;border-radius:5px;text-align: left;'>
-                            <input type='text' class='form-control' name='inp_pilihan_nm_7' id='inp_pilihan_nm_7' placeholder='Jawaban' value='' style='color:black;font-size:16px;'>
+                            <input type='text' class='form-control' name='inp_pilihan_nm_7' id='inp_pilihan_nm_7' placeholder='Jawaban' autocomplete='off' value='' style='color:black;font-size:16px;'>
                         </div>";
                     } else {
                         $getjawaban = $this->soalmodel->getjawaban($res[0]->soal_id)->getResult();
@@ -225,7 +225,7 @@ class Tryout extends BaseController
                     $button .= "<button onclick='startujian(\"next\")' style='font-size:16px;padding-left:25px;padding-right:25px;' class='btn btn-success'>Next</button>";
                     
                     if ($jumlahjawab == count($res_ttlsoal) - 1) {
-                        $button = "<button onclick='startujian(\"selesai\")' style='font-size:16px;padding-left:25px;padding-right:25px;' class='btn btn-success'>Selesai</button>";
+                        $button .= "<button onclick='startujian(\"selesai\")' style='font-size:16px;padding-left:25px;padding-right:25px; margin-left: 20px;' class='btn btn-warning'>Selesai</button>";
                     } 
                     // echo json_encode($soal_nm);exit;
                     echo json_encode(array("soal_id"=>$soal_id, "soal_nm" => strip_tags($soal_nm),"no_soal"=>$no_soal, "group_id"=>$group_id,"kolom_id"=>$kolom_id, "jawaban_nm" => $jawaban, "boxnomorsoal" => $boxnomorsoal, "button" => $button, "proc" => $proc, "img_soal"=>$img_soal,"jawaban_idx"=>$jawaban_idx,"pilihan_nms"=>$pilihan_nms,"jumlah_jawab"=>$jumlahjawab));

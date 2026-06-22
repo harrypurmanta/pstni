@@ -122,6 +122,62 @@ $request = \Config\Services::request();
             transform: rotate(360deg);
         }
     }
+
+    #dv_main_jawaban {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-top: 30px !important;
+        margin-bottom: 15px !important;
+        clear: both !important;
+        width: 100% !important;
+    }
+
+    #dv_main_jawaban .jawaban_dv {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 12px 15px !important;
+        background-color: #aeaebb !important;
+        border-radius: 5px !important;
+        cursor: pointer !important;
+        text-align: left !important;
+        transition: all 0.2s ease-in-out !important;
+        border: 3px solid transparent;
+    }
+
+    #dv_main_jawaban .jawaban_dv:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+    }
+
+    #dv_main_jawaban .jawaban_dv label {
+        display: inline-block !important;
+        margin-bottom: 0 !important;
+        margin-right: 5px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        margin-right: 0px !important;
+    }
+
+    #dv_main_jawaban .jawaban_dv span {
+        display: inline !important;
+        font-size: 16px !important;
+        cursor: pointer !important;
+    }
+
+    #dv_main_jawaban .jawaban_dv p {
+        display: inline !important;
+        margin: 0 !important;
+    }
+
+    #dv_main_jawaban .jawaban_dv img {
+        max-width: 100% !important;
+        height: auto !important;
+        margin-top: 5px !important;
+        display: block !important;
+    }
     </style>
 </head>
 
@@ -164,7 +220,7 @@ $request = \Config\Services::request();
                                     <label for="pertanyaan">Pertanyaan</label>
                                 </div>
                                 <div class="col-md-12"
-                                    style="min-height:100px;background-color:#aeaebb;border-radius:5px;padding-bottom:25px;">
+                                    style="min-height:100px;background-color:#aeaebb;border-radius:5px;padding-bottom:25px;margin-bottom:20px;">
                                     <b>
                                         <p id="p_no_soal" style="margin-top:10px;">Soal no. <?= $soal[0]->no_soal ?></p>
                                     </b>

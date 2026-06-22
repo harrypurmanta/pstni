@@ -46,7 +46,7 @@
                                         $class_bg = "bg-gray";
                                     }
                             ?>
-                            <div class="col-lg-3" style="width: 20%;border-radius:10px;">
+                            <div class="col-lg-3" style="border-radius:10px;">
                                 <div class="small-box <?= $class_bg ?>" style="border-radius:10px;">
                                     <div class="inner text-center">
                                         <h3><?= $key->materi_nm ?></h3>
