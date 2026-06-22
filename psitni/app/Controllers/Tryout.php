@@ -439,9 +439,9 @@ class Tryout extends BaseController
                 "message" => "Data user tidak ditemukan"
             ]);
         }
-
-        $getResponHasilSalah = $this->soalmodel->getResponHasilSalah($group_id, $materi_id, $user_id)->getResult();
         
+        $getResponHasilSalah = $this->soalmodel->getResponHasilSalah($group_id, $materi_id, $user_id)->getResult();
+        // echo json_encode($getResponHasilSalah);exit;
         if (empty($getResponHasilSalah)) {
             return $this->response->setJSON([
                 "status" => false,
@@ -667,7 +667,7 @@ class Tryout extends BaseController
             // $mailService->attach($filePath);
             $mailService->attach($filePathSalah);
             $mailService->attach($filePathPauli);
-            $mailService->setSubject('Hasil Tes BTP  Psi Kedinasan');
+            $mailService->setSubject('Hasil Tes BTP  Psi TNI');
             $mailService->setMessage('Terima kasih telah mengikuti tryout Bintang Timur Prestasi. berikut kami kirimkan hasil anda');
             $sendit = $mailService->send();
             echo json_encode($sendit);

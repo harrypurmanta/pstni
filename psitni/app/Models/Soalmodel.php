@@ -836,7 +836,7 @@ public function getAllSoalSK() {
             ->join('group_soal c','c.group_soal_id=a.group_id')
             ->where('a.materi',$materi)
             ->where('a.created_user_id',$user_id)
-            ->where('a.status_cd','finish')
+            // ->where('a.status_cd', 'finish')
             ->whereNotIn('a.group_id',[8])
             ->groupBy('c.group_soal_id, c.group_nm, b.pembahasan_img, b.soal_img, a.pilihan_nm, b.kunci, b.no_soal, b.pembahasan, b.soal_nm, b.materi')
             ->orderBy('c.group_soal_id', 'ASC')
