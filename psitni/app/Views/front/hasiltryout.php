@@ -187,6 +187,7 @@ $request = \Config\Services::request();
                                         <thead>
                                                 <tr>
                                                     <th class="text-center">Paket</th>
+                                                    <th class="text-center">Terjawab</th>
                                                     <th class="text-center">Benar</th>
                                                     <th class="text-center">Salah</th>
                                                 </tr>
@@ -195,11 +196,13 @@ $request = \Config\Services::request();
                                             <?php
                                                 foreach ($getRespon as $h) {
                                                     $paket = $h->group_nm;
+                                                    $terjawab = $h->total_soal;
                                                     $benar = $h->total_benar;
                                                     $salah = $h->total_salah;
                                             ?>
                                             <tr>
                                                 <td class="text-left"><?= $paket ?></td>
+                                                <td class="text-center"><?= $terjawab ?></td>
                                                 <td class="text-center"><?= $benar ?></td>
                                                 <td class="text-center"><?= $salah ?></td>
                                             </tr>

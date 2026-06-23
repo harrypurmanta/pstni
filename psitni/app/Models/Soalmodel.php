@@ -811,7 +811,7 @@ public function getAllSoalSK() {
                         ->where('a.materi',$materi)
                         ->where('a.created_user_id',$user_id)
                         // ->where('a.status_cd', 'finish')
-                        ->whereNotIn('a.group_id', [10])
+                        ->whereNotIn('a.group_id', [7,8])
                         ->groupBy('a.group_id')
                         // ->orderBy('c.urutan', 'ASC')
                         ->get();
