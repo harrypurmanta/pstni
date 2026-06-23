@@ -48,6 +48,10 @@ class Token extends BaseController
                     'type'       => 'VARCHAR',
                     'constraint' => 50,
                     'null'       => true,
+                ],
+                'expired_dttm' => [
+                    'type' => 'DATETIME',
+                    'null' => true,
                 ]
             ]);
             $forge->addKey('token_id', true);
@@ -66,6 +70,12 @@ class Token extends BaseController
                     'type'       => 'VARCHAR',
                     'constraint' => 50,
                     'null'       => true,
+                ];
+            }
+            if (!$db->fieldExists('expired_dttm', 'token')) {
+                $fields_to_add['expired_dttm'] = [
+                    'type' => 'DATETIME',
+                    'null' => true,
                 ];
             }
             if (!empty($fields_to_add)) {
@@ -109,10 +119,13 @@ class Token extends BaseController
 
         $token = $this->request->getPost('token');
         $materi_id = $this->request->getPost('materi_id');
+        $expired_dttm = $this->request->getPost('expired_dttm');
 
         if (empty($token) || empty($materi_id)) {
             return $this->response->setJSON(['status' => 'error', 'message' => 'Token dan Materi harus diisi']);
         }
+
+        $expired_val = !empty($expired_dttm) ? date('Y-m-d H:i:s', strtotime($expired_dttm)) : null;
 
         $db = \Config\Database::connect();
         
@@ -121,7 +134,8 @@ class Token extends BaseController
             'materi_id' => $materi_id,
             'status_cd' => 'normal',
             'created_dttm' => date('Y-m-d H:i:s'),
-            'created_user' => $this->session->get('user_nm')
+            'created_user' => $this->session->get('user_nm'),
+            'expired_dttm' => $expired_val
         ];
 
         $db->table('token')->insert($data);

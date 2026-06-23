@@ -55,6 +55,10 @@ class Token extends BaseController
                     'type'       => 'VARCHAR',
                     'constraint' => 50,
                     'null'       => true,
+                ],
+                'expired_dttm' => [
+                    'type' => 'DATETIME',
+                    'null' => true,
                 ]
             ]);
             $forge->addKey('token_id', true);
@@ -75,6 +79,12 @@ class Token extends BaseController
                     'null'       => true,
                 ];
             }
+            if (!$db->fieldExists('expired_dttm', 'token')) {
+                $fields_to_add['expired_dttm'] = [
+                    'type' => 'DATETIME',
+                    'null' => true,
+                ];
+            }
             if (!empty($fields_to_add)) {
                 $forge->addColumn('token', $fields_to_add);
             }
@@ -89,12 +99,16 @@ class Token extends BaseController
 		} else {
             $token = $this->request->getPost('token');
             $materi_id = $this->request->getPost('materi_id');
-            
+            $now = date('Y-m-d H:i:s');
             $db = \Config\Database::connect();
             $check = $db->table('token')
                         ->where('token', $token)
                         ->where('materi_id', $materi_id)
                         ->where('status_cd', 'normal')
+                        ->groupStart()
+                            ->where('expired_dttm', null)
+                            ->orWhere('expired_dttm >=', $now)
+                        ->groupEnd()
                         ->get()
                         ->getResult();
                         

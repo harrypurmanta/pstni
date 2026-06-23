@@ -60,6 +60,7 @@
                     <th style="text-align:center;">Materi</th>
                     <th style="text-align:center;">Dibuat Oleh</th>
                     <th style="text-align:center;">Tanggal Dibuat</th>
+                    <th style="text-align:center;">Tanggal Kedaluwarsa</th>
                     <th style="text-align:center; width: 120px;">Aksi</th>
                   </tr>
                   </thead>
@@ -74,6 +75,9 @@
                     <td><?= $key->materi_nm ?></td>
                     <td style="text-align:center;"><?= $key->created_user ?></td>
                     <td style="text-align:center;"><?= $key->created_dttm ?></td>
+                    <td style="text-align:center;">
+                      <?= $key->expired_dttm ? date('d-m-Y H:i:s', strtotime($key->expired_dttm)) : '<span class="badge badge-success">Selamanya</span>' ?>
+                    </td>
                     <td style="text-align:center;">
                       <button onclick="hapustoken(<?= $key->token_id ?>)" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Hapus</button>
                     </td>
@@ -120,6 +124,11 @@
                     <option value="<?= $m->materi_id ?>"><?= $m->materi_nm ?></option>
                   <?php endforeach; ?>
                 </select>
+              </div>
+              <div class="form-group">
+                <label for="expired_dttm">Waktu Kedaluwarsa (Optional)</label>
+                <input type="datetime-local" class="form-control" id="expired_dttm" name="expired_dttm">
+                <small class="form-text text-muted">Kosongkan jika token tidak ada batas waktu (aktif selamanya).</small>
               </div>
             </div>
             <div class="modal-footer justify-content-between">
