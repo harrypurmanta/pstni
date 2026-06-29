@@ -31,19 +31,24 @@
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
+            margin: 0;
+            overflow: hidden; /* Hilangkan scrollbar */
         }
 
         .container {
             display: flex;
-            width: 100%;
-            /* height: 100%; */
-            /* max-width: 1200px; */
+            width: 90%;
+            max-width: 960px;
+            height: 540px; /* Batasi tinggi kontainer agar pas layar */
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden; /* Sembunyikan elemen meluber dan bulatkan sudut */
         }
 
         .image-column {
             flex: 3;
+            height: 100%;
             overflow: hidden;
         }
 
@@ -59,6 +64,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            height: 100%;
         }
 
         h2 {
@@ -96,17 +102,26 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                overflow: auto; /* Izinkan scroll jika sangat kecil pada mobile */
+            }
+
             .container {
                 flex-direction: column;
+                height: auto;
+                max-height: 95vh;
+                width: 92%;
+                margin: 15px auto;
             }
 
             .image-column {
-                flex: 1;
+                height: 180px;
+                flex: none;
             }
 
             .form-column {
-                flex: 1;
                 padding: 20px;
+                height: auto;
             }
         }
 
@@ -116,7 +131,7 @@
 
 <div class="container">
         <div class="image-column">
-            <img class="image" src="<?php base_url() ?>images/bg/btp5.png" alt="Login">
+            <img class="image" src="<?= base_url('images/bg/btp_login_new.png') ?>" alt="Login">
         </div>
         <div class="form-column">
             <form action="<?= base_url() ?>/login/checklogin" method="post">

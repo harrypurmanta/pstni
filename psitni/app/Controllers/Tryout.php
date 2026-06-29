@@ -68,16 +68,14 @@ class Tryout extends BaseController
         $waktu = $this->request->getPost("waktu");
         $date = date("Y-m-d H:i:s");
         $soal_nm = "";
-        $jawaban = "";
-        $boxnomorsoal = "";
-        $res_ttlsoal = "";
-        $sisawaktu = "";
+        $res_ttlsoal = [];
         $jawaban_idx = "";
         $pilihan_nms = "";
+
         if ($jawaban_id == "null") {
 
         } else if ($proc == "next" && $jawaban_id == "" && $pilihan_nm == "") {
-            echo json_encode("jawaban_kosong");
+            return $this->response->setJSON("jawaban_kosong");
         } else {
             
             if ($proc == "prev" || $proc == "prevsoal" || $proc == "start") {
@@ -96,7 +94,6 @@ class Tryout extends BaseController
                         "created_dttm" => $date,
                         "used" => 0,
                         "kolom_id" => $kolom_id,
-                        // "session" => $this->session->session
                     ];
         
                     $updaterespon = $this->soalmodel->updateResponPrev($soal_id,$jawaban_id,$group_id,$materi,$this->session->user_id,$data);
@@ -113,7 +110,6 @@ class Tryout extends BaseController
                             "kolom_id" => $kolom_id,
                             "created_user_id" => $this->session->user_id,
                             "created_dttm" => $date,
-                            // "session" => $this->session->session
                         ];
             
                         $respon_id = $this->soalmodel->simpanRespon($data);
@@ -121,7 +117,7 @@ class Tryout extends BaseController
                 }
             }
                 if ($proc == "selesai") {
-                    echo json_encode(array("proc" => $proc));
+                    return $this->response->setJSON(array("proc" => $proc));
                 } else {
                     if ($proc == "prevsoal") {
                         $no_soal = $no_soal - 1;
@@ -130,105 +126,70 @@ class Tryout extends BaseController
                     }
                     
                     $res = $this->soalmodel->getSoal($no_soal,$group_id,$materi,$kolom_id)->getResult();
-                    // echo json_encode($res);exit;
                     if (count($res)>0) {
                         $soal_nm = $res[0]->soal_nm;
                         $soal_id = $res[0]->soal_id;
                         $group_id = $res[0]->group_id;   
                         $kolom_id = $res[0]->kolom_id;
                         $res_ttlsoal = $this->soalmodel->getTotalSoal($group_id,$materi)->getResult();
-                    } 
+                    }
+
+                    // Ambil jawaban tersimpan untuk soal aktif saat ini
+                    $current_respon = $this->soalmodel->getResponBox($soal_id,$group_id,$materi,$this->session->user_id)->getResult();
+                    $pilihan_nmx = (count($current_respon)>0) ? $current_respon[0]->pilihan_nm : "";
+
+                    $box_list = [];
                     foreach ($res_ttlsoal as $boxsoal) {
                         $getResponBox = $this->soalmodel->getResponBox($boxsoal->soal_id,$group_id,$materi,$this->session->user_id)->getResult();
-                        $boxclick = "onclick='setboxsoal($boxsoal->no_soal)'";
-                        $boxcursor = "cursor:pointer;";
-
-                        if (count($getResponBox)>0) {
-                            $pilihan_nm = " ".$getResponBox[0]->pilihan_nm;
-                            $style="border:2px solid #3cce3c;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;$boxcursor";
-                            if ($boxsoal->no_soal == $no_soal) {
-                                $pilihan_nmx = $getResponBox[0]->pilihan_nm;
-                                $style="border:2px solid blue;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;$boxcursor";
-                            }
-                        } else {
-                            $pilihan_nm = "";
-                            $style="border:2px solid red;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;$boxcursor";
-                            if ($boxsoal->no_soal == $no_soal) {
-                                $pilihan_nmx = $pilihan_nm;
-                                $style="border:2px solid blue;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;$boxcursor";
-                            }
-                        }
-                        $boxnomorsoal .= "<div class='col-md-2' style='$style font-size:12px;'>".$boxsoal->no_soal."$pilihan_nm</div>";
-                    }
-                    
-
-                    if ($res[0]->soal_img == "") {
-                        $img_soal = "";
-                    } else {
-                        $img_soal = "<div class='col-sm-10'>
-                        <a href='".base_url()."/images/soal/materi/".$res[0]->materi."/besar/".$res[0]->soal_img."' data-toggle='lightbox'>
-                        <img style='max-width: 350px;max-height: 100%;' src='".base_url()."/images/soal/materi/".$res[0]->materi."/".$res[0]->soal_img."' class='img-fluid'>
-                        </a>
-                    </div>";
+                        $has_respon = count($getResponBox) > 0;
+                        $box_list[] = [
+                            "no_soal" => (int)$boxsoal->no_soal,
+                            "soal_id" => $boxsoal->soal_id,
+                            "has_respon" => $has_respon,
+                            "pilihan_nm" => $has_respon ? $getResponBox[0]->pilihan_nm : ""
+                        ];
                     }
 
-                    if ($group_id == 7) {
-                        $jawaban = "<div class='btn col-md-12' style='margin-top:10px;margin-bottom:10px;background-color:#aeaebb;border-radius:5px;text-align: left;'>
-                            <input type='text' class='form-control' name='inp_pilihan_nm_7' id='inp_pilihan_nm_7' placeholder='Jawaban' autocomplete='off' value='' style='color:black;font-size:16px;'>
-                        </div>";
-                    } else {
+                    $jawaban_list = [];
+                    if ($group_id != 7 && count($res) > 0) {
                         $getjawaban = $this->soalmodel->getjawaban($res[0]->soal_id)->getResult();
                         foreach ($getjawaban as $key) {
                             if ($pilihan_nmx == $key->pilihan_nm) {
                                 $jawaban_idx = $key->jawaban_id;
                                 $pilihan_nms = $key->pilihan_nm;
-                                $border = "margin-top:10px;margin-bottom:10px;background-color:#aeaebb;border-radius:5px;text-align: left;border: thick solid rgb(0, 166, 90);";
-                            } else {
-                                $border = "";
                             }
-                            
-                            if ($key->jawaban_img == "") {
-                                $img_jwb = "";
-                            } else {
-                                $img_jwb = "<img style='max-width:350px;height:100%;' src='".base_url()."/images/jawaban/materi/".$res[0]->materi."/group/".$group_id."/".$key->jawaban_img."'>";
-                            }
-                            
-                            $jawaban .= "
-                                <div id='dv_jawaban_".$key->jawaban_id."' 
-                                    onclick='selectJawaban(".$key->jawaban_id.",\"".$key->pilihan_nm."\")' 
-                                    class='btn col-md-12 jawaban_dv' 
-                                    style='margin-top:10px;margin-bottom:10px;background-color:#aeaebb;border-radius:5px;text-align:left;
-                                            word-break: break-all; overflow-wrap: break-word; white-space: normal;'>
-                                    
-                                    <label for='pilihan_nm'>".$key->pilihan_nm.". </label> 
-
-                                    <span>
-                                        ".$key->jawaban_nm."
-                                    </span>
-
-                                    <div>$img_jwb</div>
-                                </div>";
+                            $jawaban_list[] = [
+                                "jawaban_id" => $key->jawaban_id,
+                                "pilihan_nm" => $key->pilihan_nm,
+                                "jawaban_nm" => $key->jawaban_nm,
+                                "jawaban_img" => $key->jawaban_img
+                            ];
                         }
                     }
     
-                    
-                    $button = "";
                     $getjumlahjawab = $this->soalmodel->getResponCountByMateriUser($group_id,$materi,$this->session->user_id)->getResult();
-                    if (count($getjumlahjawab)>0) {
-                        $jumlahjawab = $getjumlahjawab[0]->jumlah_jawab;
-                    } else {
-                        $jumlahjawab = 0;
-                    }
+                    $jumlahjawab = (count($getjumlahjawab)>0) ? (int)$getjumlahjawab[0]->jumlah_jawab : 0;
                     
-                    
-
-                    $button .= "<button onclick='startujian(\"next\")' style='font-size:16px;padding-left:25px;padding-right:25px;' class='btn btn-success'>Next</button>";
-                    
-                    if ($jumlahjawab == count($res_ttlsoal) - 1) {
-                        $button .= "<button onclick='startujian(\"selesai\")' style='font-size:16px;padding-left:25px;padding-right:25px; margin-left: 20px;' class='btn btn-warning'>Selesai</button>";
-                    } 
-                    // echo json_encode($soal_nm);exit;
-                    echo json_encode(array("soal_id"=>$soal_id, "soal_nm" => strip_tags($soal_nm),"no_soal"=>$no_soal, "group_id"=>$group_id,"kolom_id"=>$kolom_id, "jawaban_nm" => $jawaban, "boxnomorsoal" => $boxnomorsoal, "button" => $button, "proc" => $proc, "img_soal"=>$img_soal,"jawaban_idx"=>$jawaban_idx,"pilihan_nms"=>$pilihan_nms,"jumlah_jawab"=>$jumlahjawab));
+                    return $this->response->setJSON([
+                        "soal_id" => $soal_id,
+                        "soal_nm" => strip_tags($soal_nm),
+                        "no_soal" => $no_soal,
+                        "group_id" => $group_id,
+                        "kolom_id" => $kolom_id,
+                        "proc" => $proc,
+                        "jawaban_idx" => $jawaban_idx,
+                        "pilihan_nms" => $pilihan_nms,
+                        "jumlah_jawab" => $jumlahjawab,
+                        "total_soal_count" => count($res_ttlsoal),
+                        "pilihan_nmx" => $pilihan_nmx,
+                        "soal" => count($res) > 0 ? [
+                            "soal_img" => $res[0]->soal_img,
+                            "materi" => $res[0]->materi
+                        ] : null,
+                        "jawaban_list" => $jawaban_list,
+                        "box_list" => $box_list,
+                        "base_url" => base_url()
+                    ]);
                 }
         }
         

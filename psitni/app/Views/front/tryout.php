@@ -340,7 +340,10 @@ $request = \Config\Services::request();
         }
         $("#inp_jawaban_id").val(jawaban_id);
         $("#inp_pilihan_nm").val(pilihan_nm);
-        document.getElementById("dv_jawaban_" + jawaban_id).style.border = "thick solid #00a65a";
+        let el = document.getElementById("dv_jawaban_" + jawaban_id);
+        if (el) {
+            el.style.border = "thick solid #00a65a";
+        }
     }
 
     function setboxsoal(no_soal) {
@@ -397,12 +400,85 @@ $request = \Config\Services::request();
                         $("#inp_group_id").val(data.group_id);
                         $("#inp_no_soal").val(data.no_soal);
                         $("#inp_kolom_id").val(data.kolom_id);
-                        $("#dv_main_jawaban").html(data.jawaban_nm);
-                        $("#dv_boxnosoal").html(data.boxnomorsoal);
-                        $("#dv_button").html(data.button);
+
+                        // 1. Build Jawaban HTML
+                        let jawabanHtml = "";
+                        if (data.group_id == 7) {
+                            jawabanHtml = `<div class='btn col-md-12' style='margin-top:10px;margin-bottom:10px;background-color:#aeaebb;border-radius:5px;text-align: left;'>
+                                <input type='text' class='form-control' name='inp_pilihan_nm_7' id='inp_pilihan_nm_7' placeholder='Jawaban' autocomplete='off' value='${data.pilihan_nmx || ""}' style='color:black;font-size:16px;'>
+                            </div>`;
+                        } else {
+                            if (data.jawaban_list) {
+                                data.jawaban_list.forEach(key => {
+                                    let border = "";
+                                    if (data.pilihan_nms == key.pilihan_nm) {
+                                        border = "border: thick solid rgb(0, 166, 90);";
+                                    }
+                                    let img_jwb = "";
+                                    if (key.jawaban_img) {
+                                        img_jwb = `<img style='max-width:350px;height:100%;' src='${data.base_url}/images/jawaban/materi/${data.soal.materi}/group/${data.group_id}/${key.jawaban_img}'>`;
+                                    }
+                                    jawabanHtml += `
+                                        <div id='dv_jawaban_${key.jawaban_id}' 
+                                            onclick='selectJawaban(${key.jawaban_id},"${key.pilihan_nm}")' 
+                                            class='btn col-md-12 jawaban_dv' 
+                                            style='margin-top:10px;margin-bottom:10px;background-color:#aeaebb;border-radius:5px;text-align:left;
+                                                    word-break: break-all; overflow-wrap: break-word; white-space: normal; ${border}'>
+                                            <label for='pilihan_nm'>${key.pilihan_nm}. </label> 
+                                            <span>${key.jawaban_nm}</span>
+                                            <div>${img_jwb}</div>
+                                        </div>`;
+                                });
+                            }
+                        }
+                        $("#dv_main_jawaban").html(jawabanHtml);
+
+                        // 2. Build Box No Soal HTML
+                        let boxHtml = "";
+                        if (data.box_list) {
+                            data.box_list.forEach(boxsoal => {
+                                let boxcursor = "cursor:pointer;";
+                                let style = "";
+                                let pilihan_nm_txt = "";
+                                if (boxsoal.has_respon) {
+                                    pilihan_nm_txt = " " + boxsoal.pilihan_nm;
+                                    style = `border:2px solid #3cce3c;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
+                                    if (boxsoal.no_soal == data.no_soal) {
+                                        style = `border:2px solid blue;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
+                                    }
+                                } else {
+                                    pilihan_nm_txt = "";
+                                    style = `border:2px solid red;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
+                                    if (boxsoal.no_soal == data.no_soal) {
+                                        style = `border:2px solid blue;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
+                                    }
+                                }
+                                boxHtml += `<div class='col-md-2' style='${style} font-size:12px;' onclick='setboxsoal(${boxsoal.no_soal})'>${boxsoal.no_soal}${pilihan_nm_txt}</div>`;
+                            });
+                        }
+                        $("#dv_boxnosoal").html(boxHtml);
+
+                        // 3. Build Button HTML
+                        let buttonHtml = `<button onclick='startujian("next")' style='font-size:16px;padding-left:25px;padding-right:25px;' class='btn btn-success'>Next</button>`;
+                        if (data.jumlah_jawab == data.total_soal_count - 1) {
+                            buttonHtml += `<button onclick='startujian("selesai")' style='font-size:16px;padding-left:25px;padding-right:25px; margin-left: 20px;' class='btn btn-warning'>Selesai</button>`;
+                        }
+                        $("#dv_button").html(buttonHtml);
+
                         $("#inp_jawaban_id").val("");
                         $("#inp_pilihan_nm").val("");
-                        $("#dv_img_soal").html(data.img_soal);
+
+                        // 4. Build Image Soal HTML
+                        let imgSoalHtml = "";
+                        if (data.soal && data.soal.soal_img) {
+                            imgSoalHtml = `<div class='col-sm-10'>
+                                <a href='${data.base_url}/images/soal/materi/${data.soal.materi}/besar/${data.soal.soal_img}' data-toggle='lightbox'>
+                                    <img style='max-width: 350px;max-height: 100%;' src='${data.base_url}/images/soal/materi/${data.soal.materi}/${data.soal.soal_img}' class='img-fluid'>
+                                </a>
+                            </div>`;
+                        }
+                        $("#dv_img_soal").html(imgSoalHtml);
+
                         setTimeout(() => {
                             selectJawaban(data.jawaban_idx,data.pilihan_nms);
                         }, 10);
