@@ -78,8 +78,11 @@
                     </div>
                   </form>
                 </div>
-              <div class="col-lg-12">
-                <a href="<?= base_url() ?>/admin/soal/viewTambahsoal" class="btn btn-primary">Tambah Soal</a>
+              <div class="col-lg-12 pb-2">
+                <a href="<?= base_url() ?>/admin/soal/viewTambahsoal" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Soal</a>
+                <button type="button" class="btn btn-success ml-2" data-toggle="modal" data-target="#modalImportSoal">
+                  <i class="fas fa-file-excel"></i> Import Soal (Excel)
+                </button>
               </div>
               </div>
               <!-- /.card-header -->
@@ -111,6 +114,53 @@
   
  
 
+<!-- Modal Import Soal -->
+<div class="modal fade" id="modalImportSoal" tabindex="-1" role="dialog" aria-labelledby="modalImportSoalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalImportSoalLabel"><i class="fas fa-file-excel text-success"></i> Import Soal dari Excel</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="formImportSoal" method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="import_materi_id">Materi Soal <span class="text-danger">*</span></label>
+            <select name="materi_id" id="import_materi_id" class="form-control" required>
+              <option value="" disabled selected>Pilih Materi Soal</option>
+              <?php foreach ($materi as $key) { ?>
+                <option value="<?= $key->materi_id ?>"><?= $key->materi_nm ?></option>
+              <?php } ?>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="import_group_id">Group Soal <span class="text-danger">*</span></label>
+            <select name="group_id" id="import_group_id" class="form-control" required>
+              <option value="" disabled selected>Pilih Group Soal</option>
+              <?php foreach ($group as $key) { ?>
+                <option value="<?= $key->group_soal_id ?>"><?= $key->group_nm ?></option>
+              <?php } ?>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="file_excel">File Excel (.xls, .xlsx) <span class="text-danger">*</span></label>
+            <input type="file" name="file_excel" id="file_excel" class="form-control-file" accept=".xls,.xlsx" required>
+          </div>
+          <div class="alert alert-info">
+            <a href="<?= base_url('admin/soal/downloadTemplate') ?>" class="btn btn-xs btn-success mt-2"><i class="fas fa-download"></i> Download Template Excel</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-success"><i class="fas fa-upload"></i> Mulai Import</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 </div>
 <!-- ./wrapper -->
 <?= $this->include('admin/template/scriptjs') ?>
@@ -129,7 +179,61 @@
 
     $("input[data-bootstrap-switch]").each(function(){
       $(this).bootstrapSwitch('state', $(this).prop('checked'));
-    })
+    });
+
+    $('#formImportSoal').on('submit', function(e) {
+      e.preventDefault();
+      var formData = new FormData(this);
+      $.ajax({
+        url: "<?= base_url('admin/soal/importExcel') ?>",
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        beforeSend: function() {
+          $("#loader-wrapper").removeClass("d-none");
+        },
+        success: function(data) {
+          $("#loader-wrapper").addClass("d-none");
+          try {
+            var res = JSON.parse(data);
+            if (res.status === 'success') {
+              $('#modalImportSoal').modal('hide');
+              Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: res.message,
+              }).then(() => {
+                $("#materi_id").val($("#import_materi_id").val());
+                $("#group_id").val($("#import_group_id").val());
+                tampilkansoal();
+                $('#formImportSoal')[0].reset();
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: res.message,
+              });
+            }
+          } catch (e) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Terjadi kesalahan sistem parsing response.',
+            });
+          }
+        },
+        error: function() {
+          $("#loader-wrapper").addClass("d-none");
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Terjadi kesalahan saat mengunggah file.',
+          });
+        }
+      });
+    });
   });
 
   tampilkansoal = () => {

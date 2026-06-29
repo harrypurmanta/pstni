@@ -1222,4 +1222,285 @@ class Soal extends BaseController
         $update = $this->soalmodel->updatestatus($jawaban_nm,$kolom_id,$status_cd,$old_status);
     }
 
+    public function downloadTemplate()
+    {
+        if ($this->session->get("user_nm") == "") {
+            return redirect('/');
+        }
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        // Header
+        $sheet->setCellValue('A1', 'No Soal');
+        $sheet->setCellValue('B1', 'Soal');
+        $sheet->setCellValue('C1', 'soal_img');
+        $sheet->setCellValue('D1', 'Pilihan A');
+        $sheet->setCellValue('E1', 'jawaban_img A');
+        $sheet->setCellValue('F1', 'Pilihan B');
+        $sheet->setCellValue('G1', 'jawaban_img B');
+        $sheet->setCellValue('H1', 'Pilihan C');
+        $sheet->setCellValue('I1', 'jawaban_img C');
+        $sheet->setCellValue('J1', 'Pilihan D');
+        $sheet->setCellValue('K1', 'jawaban_img D');
+        $sheet->setCellValue('L1', 'Pilihan E');
+        $sheet->setCellValue('M1', 'jawaban_img E');
+        $sheet->setCellValue('N1', 'Kunci');
+        $sheet->setCellValue('O1', 'Pembahasan');
+        $sheet->setCellValue('P1', 'pembahasan_img');
+
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '2E7D32'],
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ]
+        ];
+        $sheet->getStyle('A1:P1')->applyFromArray($headerStyle);
+
+        // Auto size
+        foreach (range('A', 'P') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Example row
+        $sheet->setCellValue('A2', '1');
+        $sheet->setCellValue('B2', 'Pertanyaan atau soal di sini.');
+        $sheet->setCellValue('C2', 'soal_1.jpg');
+        $sheet->setCellValue('D2', 'Jawaban Pilihan A');
+        $sheet->setCellValue('E2', 'jawaban_a_1.jpg');
+        $sheet->setCellValue('F2', 'Jawaban Pilihan B');
+        $sheet->setCellValue('G2', 'jawaban_b_1.jpg');
+        $sheet->setCellValue('H2', 'Jawaban Pilihan C');
+        $sheet->setCellValue('I2', 'jawaban_c_1.jpg');
+        $sheet->setCellValue('J2', 'Jawaban Pilihan D');
+        $sheet->setCellValue('K2', 'jawaban_d_1.jpg');
+        $sheet->setCellValue('L2', 'Jawaban Pilihan E (boleh kosong)');
+        $sheet->setCellValue('M2', 'jawaban_e_1.jpg');
+        $sheet->setCellValue('N2', 'A');
+        $sheet->setCellValue('O2', 'Penjelasan atau pembahasan soal di sini.');
+        $sheet->setCellValue('P2', 'pembahasan_1.jpg');
+
+        $filename = 'Template_Import_Soal.xlsx';
+        
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function importExcel()
+    {
+        if ($this->session->get("user_nm") == "") {
+            return json_encode(['status' => 'error', 'message' => 'Sesi Anda telah habis. Silakan login kembali.']);
+        }
+
+        $materi_id = $this->request->getPost('materi_id');
+        $group_id = $this->request->getPost('group_id');
+        $file = $this->request->getFile('file_excel');
+
+        if (!$materi_id || !$group_id) {
+            return json_encode(['status' => 'error', 'message' => 'Materi dan Group Soal harus dipilih.']);
+        }
+
+        if (!$file || !$file->isValid()) {
+            return json_encode(['status' => 'error', 'message' => 'File Excel tidak ditemukan atau tidak valid.']);
+        }
+
+        $ext = $file->getClientExtension();
+        if (!in_array($ext, ['xls', 'xlsx'])) {
+            return json_encode(['status' => 'error', 'message' => 'Format file harus berupa .xls atau .xlsx.']);
+        }
+
+        try {
+            $reader = null;
+            if ($ext === 'xls') {
+                $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+            } else {
+                $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+            }
+            $spreadsheet = $reader->load($file->getTempName());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+            
+            if (count($rows) <= 1) {
+                return json_encode(['status' => 'error', 'message' => 'File Excel kosong atau hanya berisi header.']);
+            }
+
+            if (count($rows[0]) < 16) {
+                return json_encode(['status' => 'error', 'message' => 'Format kolom Excel tidak sesuai. Harus ada minimal 16 kolom. Download template excel yang baru.']);
+            }
+
+            $validatedRows = [];
+            $seenNoSoal = [];
+
+            // Validation loop
+            for ($i = 1; $i < count($rows); $i++) {
+                $row = $rows[$i];
+                
+                $isEmptyRow = true;
+                foreach ($row as $cellValue) {
+                    if ($cellValue !== null && trim($cellValue) !== '') {
+                        $isEmptyRow = false;
+                        break;
+                    }
+                }
+                if ($isEmptyRow) {
+                    continue;
+                }
+
+                $no_soal = isset($row[0]) ? trim($row[0]) : '';
+                $soal_nm = isset($row[1]) ? trim($row[1]) : '';
+                $soal_img = isset($row[2]) ? trim($row[2]) : '';
+                
+                $pilihan_a = isset($row[3]) ? trim($row[3]) : '';
+                $jawaban_img_a = isset($row[4]) ? trim($row[4]) : '';
+                
+                $pilihan_b = isset($row[5]) ? trim($row[5]) : '';
+                $jawaban_img_b = isset($row[6]) ? trim($row[6]) : '';
+                
+                $pilihan_c = isset($row[7]) ? trim($row[7]) : '';
+                $jawaban_img_c = isset($row[8]) ? trim($row[8]) : '';
+                
+                $pilihan_d = isset($row[9]) ? trim($row[9]) : '';
+                $jawaban_img_d = isset($row[10]) ? trim($row[10]) : '';
+                
+                $pilihan_e = isset($row[11]) ? trim($row[11]) : '';
+                $jawaban_img_e = isset($row[12]) ? trim($row[12]) : '';
+                
+                $kunci = isset($row[13]) ? strtoupper(trim($row[13])) : '';
+                $pembahasan = isset($row[14]) ? trim($row[14]) : '';
+                $pembahasan_img = isset($row[15]) ? trim($row[15]) : '';
+
+                $rowNum = $i + 1;
+
+                if ($no_soal === '') {
+                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Nomor Soal tidak boleh kosong."]);
+                }
+                if (!is_numeric($no_soal)) {
+                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Nomor Soal harus berupa angka."]);
+                }
+                $no_soal = (int)$no_soal;
+
+                if ($soal_nm === '' && $soal_img === '') {
+                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Teks Soal atau Gambar Soal tidak boleh kosong."]);
+                }
+
+                if (($pilihan_a === '' && $jawaban_img_a === '') || 
+                    ($pilihan_b === '' && $jawaban_img_b === '') || 
+                    ($pilihan_c === '' && $jawaban_img_c === '') || 
+                    ($pilihan_d === '' && $jawaban_img_d === '')) {
+                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Pilihan A, B, C, dan D tidak boleh kosong (harus diisi teks atau nama file gambar)."]);
+                }
+
+                if (!in_array($kunci, ['A', 'B', 'C', 'D', 'E'])) {
+                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Kunci jawaban harus berupa A, B, C, D, atau E."]);
+                }
+
+                if ($kunci === 'E' && $pilihan_e === '' && $jawaban_img_e === '') {
+                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Kunci jawaban adalah E, tetapi pilihan E kosong."]);
+                }
+
+                if (in_array($no_soal, $seenNoSoal)) {
+                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Nomor Soal $no_soal duplikat di dalam file Excel."]);
+                }
+                $seenNoSoal[] = $no_soal;
+
+                $dbCheck = $this->soalmodel->getSoalByNoSoalGrpMtri($no_soal, $group_id, $materi_id)->getResult();
+                if (count($dbCheck) > 0) {
+                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Nomor Soal $no_soal sudah terdaftar di database untuk materi dan group ini."]);
+                }
+
+                $validatedRows[] = [
+                    'no_soal' => $no_soal,
+                    'soal_nm' => $soal_nm,
+                    'soal_img' => $soal_img,
+                    'options' => [
+                        'A' => ['text' => $pilihan_a, 'img' => $jawaban_img_a],
+                        'B' => ['text' => $pilihan_b, 'img' => $jawaban_img_b],
+                        'C' => ['text' => $pilihan_c, 'img' => $jawaban_img_c],
+                        'D' => ['text' => $pilihan_d, 'img' => $jawaban_img_d],
+                        'E' => ['text' => $pilihan_e, 'img' => $jawaban_img_e]
+                    ],
+                    'kunci' => $kunci,
+                    'pembahasan' => $pembahasan,
+                    'pembahasan_img' => $pembahasan_img
+                ];
+            }
+
+            if (empty($validatedRows)) {
+                return json_encode(['status' => 'error', 'message' => 'Tidak ada data soal yang valid ditemukan di dalam file Excel.']);
+            }
+
+            $db = \Config\Database::connect();
+            $db->transBegin();
+
+            $successCount = 0;
+            foreach ($validatedRows as $vRow) {
+                $soalData = [
+                    'soal_nm' => $vRow['soal_nm'],
+                    'group_id' => $group_id,
+                    'no_soal' => $vRow['no_soal'],
+                    'kunci' => $vRow['kunci'],
+                    'materi' => $materi_id,
+                    'soal_img' => $vRow['soal_img'] !== '' ? $vRow['soal_img'] : null,
+                    'pembahasan_img' => $vRow['pembahasan_img'] !== '' ? $vRow['pembahasan_img'] : null,
+                    'pembahasan' => $vRow['pembahasan'],
+                    'status_cd' => 'normal'
+                ];
+
+                $soal_id = $this->soalmodel->simpansoal($soalData);
+
+                if (!$soal_id) {
+                    $db->transRollback();
+                    return json_encode(['status' => 'error', 'message' => 'Gagal menyimpan soal nomor ' . $vRow['no_soal']]);
+                }
+
+                foreach ($vRow['options'] as $pilihan => $optData) {
+                    $jawaban_nm = $optData['text'];
+                    $jawaban_img = $optData['img'];
+
+                    if ($pilihan === 'E' && $jawaban_nm === '' && $jawaban_img === '') {
+                        continue;
+                    }
+
+                    $jawabanData = [
+                        'soal_id' => $soal_id,
+                        'jawaban_nm' => $jawaban_nm,
+                        'pilihan_nm' => $pilihan,
+                        'jawaban_img' => $jawaban_img !== '' ? $jawaban_img : null,
+                        'status_cd' => 'normal'
+                    ];
+
+                    $this->jawabanmodel->simpanjawaban($jawabanData);
+                }
+
+                $successCount++;
+            }
+
+            if ($db->transStatus() === FALSE) {
+                $db->transRollback();
+                return json_encode(['status' => 'error', 'message' => 'Terjadi kesalahan transaksi saat menyimpan data ke database.']);
+            }
+
+            $db->transCommit();
+            return json_encode([
+                'status' => 'success',
+                'message' => 'Berhasil mengimpor ' . $successCount . ' soal beserta kunci dan pembahasan.'
+            ]);
+
+        } catch (\Exception $e) {
+            return json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
 }

@@ -61,6 +61,8 @@ $routes->post('sikapkerja/startujian', '\App\Controllers\Sikapkerja::startujian'
 
 $routes->get('admin', '\App\Controllers\Admin\Dashboard::index');
 $routes->get('admin/soal', '\App\Controllers\Admin\Soal::index');
+$routes->get('admin/soal/downloadTemplate', '\App\Controllers\Admin\Soal::downloadTemplate');
+$routes->post('admin/soal/importExcel', '\App\Controllers\Admin\Soal::importExcel');
 $routes->get('admin/soallatihan', '\App\Controllers\Admin\Soallatihan::index');
 $routes->get('admin/jawaban', '\App\Controllers\Admin\Jawaban::index');
 $routes->get('admin/jawabanlatihan', '\App\Controllers\Admin\Jawabanlatihan::index');
@@ -137,6 +139,8 @@ $routes->get('soal/simpansoallatihan', '\App\Controllers\Admin\Soal::simpansoall
 $routes->post('soal/simpansoallatihan', '\App\Controllers\Admin\Soal::simpansoallatihan');
 $routes->get('soal/updatestatus', '\App\Controllers\Admin\Soal::updatestatus');
 $routes->post('soal/updatestatus', '\App\Controllers\Admin\Soal::updatestatus');
+$routes->get('soal/downloadTemplate', '\App\Controllers\Admin\Soal::downloadTemplate');
+$routes->post('soal/importExcel', '\App\Controllers\Admin\Soal::importExcel');
 
 $routes->get('soallatihan/tambahsoallatihan', '\App\Controllers\Admin\Soallatihan::tambahsoallatihan');
 $routes->post('soallatihan/tambahsoallatihan', '\App\Controllers\Admin\Soallatihan::tambahsoallatihan');
