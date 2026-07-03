@@ -276,7 +276,7 @@
                 data: null,
                 className: "text-left",
                 render: function(data) {
-                    return "<div style=\"margin-bottom:0px;\" class=\"text-center\"><p class=\"mb-0\">" + data.soal_nm + "</p></div><div class=\"mt-2\"> <img src=\"<?= base_url() ?>/images/soal/materi/"+materi_id+"/"+data.soal_img + "\" alt=\"\" width=\"100%\"></div>"
+                    return "<div style=\"margin-bottom:0px;\" class=\"text-center\"><p class=\"mb-0\">" + data.soal_nm + "</p></div><div class=\"mt-2\"> <img src=\"<?= base_url() ?>/images/soal/materi/"+materi_id+"/group/"+group_id+"/"+data.soal_img + "\" alt=\"\" width=\"50%\"></div>"
                 }
             },
             {

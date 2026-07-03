@@ -21,42 +21,42 @@
         }
         .form-riwayat-card {
             background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
             border: none;
-            margin-top: 10px;
-            margin-bottom: 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
             overflow: hidden;
             border-top: 4px solid #3c8dbc;
         }
         .form-riwayat-header {
             background: linear-gradient(135deg, #3c8dbc, #224d73);
             color: #ffffff;
-            padding: 15px 25px;
+            padding: 10px 20px;
         }
         .form-riwayat-header h3 {
             margin: 0;
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
             letter-spacing: 0.5px;
-            font-size: 20px;
+            font-size: 17px;
         }
         .form-riwayat-header p {
-            margin: 4px 0 0 0;
-            font-size: 13px;
+            margin: 2px 0 0 0;
+            font-size: 12px;
             opacity: 0.9;
         }
         .form-riwayat-body {
-            padding: 20px 25px 10px 25px;
+            padding: 12px 20px 6px 20px;
         }
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         .form-group label {
             font-weight: 600;
             color: #4a5568;
-            margin-bottom: 6px;
-            font-size: 13px;
+            margin-bottom: 4px;
+            font-size: 12px;
         }
         .input-group-addon {
             background-color: #f8fafc;
@@ -64,14 +64,16 @@
             color: #718096;
             transition: all 0.3s;
             border-radius: 6px 0 0 6px !important;
-            padding: 6px 12px;
+            padding: 4px 10px;
         }
         .form-control {
             border-radius: 0 6px 6px 0 !important;
             border-color: #d2d6de;
-            height: 38px;
+            height: 32px;
             box-shadow: none;
             transition: all 0.3s;
+            font-size: 13px;
+            padding: 5px 10px;
         }
         .form-control:focus {
             border-color: #3c8dbc;
@@ -84,18 +86,18 @@
         }
         .textarea-alamat {
             border-radius: 6px !important;
-            height: auto;
+            height: 48px !important;
             resize: none;
-            padding: 8px 12px;
+            padding: 6px 10px;
         }
         .btn-submit-riwayat {
             background: linear-gradient(135deg, #3c8dbc, #286090);
             border: none;
-            padding: 10px 25px;
-            font-size: 15px;
+            padding: 6px 18px;
+            font-size: 13px;
             font-weight: 600;
             border-radius: 6px;
-            box-shadow: 0 4px 10px rgba(60, 141, 188, 0.3);
+            box-shadow: 0 3px 8px rgba(60, 141, 188, 0.25);
             transition: all 0.3s;
             color: #fff;
         }
@@ -190,7 +192,7 @@
                                                     <div class="input-group">
                                                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                                         <input type="date" class="form-control" id="birth_dttm" name="birth_dttm" 
-                                                               value="<?= esc($session->get('birth_dttm')) ?>" required>
+                                                               value="<?= !empty($session->get('birth_dttm')) ? date('Y-m-d', strtotime($session->get('birth_dttm'))) : '' ?>" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -232,7 +234,7 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="box-footer text-right" style="background: #fdfdfd; padding: 12px 30px !important; border-top: 1px solid #f4f4f4;">
+                                    <div class="box-footer text-right" style="background: #fdfdfd; padding: 8px 20px !important; border-top: 1px solid #f4f4f4;">
                                         <button type="submit" id="btn-submit" class="btn btn-submit-riwayat">
                                             <i class="fa fa-save"></i> Simpan & Lanjutkan <i class="fa fa-chevron-right" style="font-size: 12px; margin-left: 5px;"></i>
                                         </button>
@@ -284,9 +286,14 @@
     <script src="<?= base_url() ?>/dist/js/adminlte.min.js"></script>
     <script src="<?= base_url() ?>/dist/js/demo.js"></script>
     <script>
+        $(document).ready(function() {
+            $('#modal-token').on('shown.bs.modal', function () {
+                $('#token').focus();
+            });
+        });
+
         function showtoken(group_id, materi_id) {
             $("#token").val("");
-            $("#token").focus();
             $("#group_idx").val(group_id);
             $("#materi_id").val(materi_id);
             $("#modal-token").modal("show");

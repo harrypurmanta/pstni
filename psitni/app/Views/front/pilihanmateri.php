@@ -95,9 +95,14 @@
     <script src="<?= base_url() ?>/dist/js/adminlte.min.js"></script>
     <script src="<?= base_url() ?>/dist/js/demo.js"></script>
     <script>
+        $(document).ready(function() {
+            $('#modal-token').on('shown.bs.modal', function () {
+                $('#token').focus();
+            });
+        });
+
         function showtoken(group_id, materi_id) {
             $("#token").val("");
-            $("#token").focus();
             $("#group_idx").val(group_id);
             $("#materi_id").val(materi_id);
             $("#modal-token").modal("show");

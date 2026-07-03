@@ -21,206 +21,202 @@
   <link rel="stylesheet" href="<?= base_url() ?>/dist/dist/css/adminlte.min.css">
   <style>
     #loader-wrapper {
-	display: flex;
-	position: fixed;
-	z-index: 1060;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	padding: 0.625em;
-	overflow-x: hidden;
-	transition: background-color 0.1s;
-	background-color: rgb(253 253 253 / 58%);
-	-webkit-overflow-scrolling: touch;
-}
+      display: flex;
+      position: fixed;
+      z-index: 1060;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 0.625em;
+      overflow-x: hidden;
+      transition: background-color 0.1s;
+      background-color: rgb(253 253 253 / 58%);
+      -webkit-overflow-scrolling: touch;
+    }
 
-.loader {
-	border: 10px solid #f3f3f3;
-	border-radius: 50%;
-	border-top: 10px solid #3af3f5;
-	border-bottom: 10px solid #3abcec;
-	width: 50px;
-	height: 50px;
-	-webkit-animation: spin 2s linear infinite;
-	animation: spin 2s linear infinite;
-	margin: 1.75rem auto;
-}
+    .loader {
+      border: 10px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 10px solid #3af3f5;
+      border-bottom: 10px solid #3abcec;
+      width: 50px;
+      height: 50px;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+      margin: 1.75rem auto;
+    }
 
-	
+      
 
-		@keyframes fadeIn {
-		  0% {
-		    opacity: 0;
-		  }
-		  100% {
-		    opacity: 1;
-		  }
-		}
+        @keyframes fadeIn {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
 
-		@-moz-keyframes fadeIn {
-		  0% {
-		    opacity: 0;
-		  }
-		  100% {
-		    opacity: 1;
-		  }
-		}
+        @-moz-keyframes fadeIn {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
 
-		@-webkit-keyframes fadeIn {
-		  0% {
-		    opacity: 0;
-		  }
-		  100% {
-		    opacity: 1;
-		  }
-		}
+        @-webkit-keyframes fadeIn {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
 
-		@-o-keyframes fadeIn {
-		  0% {
-		    opacity: 0;
-		  }
-		  100% {
-		    opacity: 1;
-		  }
-		}
+        @-o-keyframes fadeIn {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
 
-		@-ms-keyframes fadeIn {
-		  0% {
-		    opacity: 0;
-		  }
-		  100% {
-		    opacity: 1;
-		  }
-		}
+        @-ms-keyframes fadeIn {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
 
-		@-webkit-keyframes spin {
-		  0% {
-		    -webkit-transform: rotate(0deg);
-		  }
-		  100% {
-		    -webkit-transform: rotate(360deg);
-		  }
-		}
+        @-webkit-keyframes spin {
+          0% {
+            -webkit-transform: rotate(0deg);
+          }
+          100% {
+            -webkit-transform: rotate(360deg);
+          }
+        }
 
-		@keyframes spin {
-		  0% {
-		    transform: rotate(0deg);
-		  }
-		  100% {
-		    transform: rotate(360deg);
-		  }
-		}
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
   </style>
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
- <!-- Navbar -->
- 
-
  <?= $this->include('admin/navbar') ?>
-  <!-- /.navbar -->
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>Soal</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Soal</li>
-            </ol>
-          </div>
-        </div>
-      </div><!-- /.container-fluid -->
-    </section>
-
-    <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-              <div class="col-lg-12">
-                <div class="col-lg-1" style="display:inline-block;text-align:left;width:100%;">
-                  <button style="margin-bottom:10px;" onclick="tambahsoal()" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">Tambah</button>
-                  <button onclick="tambahsoallatihan()" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">Tambah SK</button>
-                </div>
-                <div class="col-lg-4" style="display:inline-block;text-align:center;width:100%;">
-                  <?php
-                    foreach ($materi as $mtr) {
-                  ?>
-                  <label> <input <?= ($mtr->materi_id == $this->session->materi_filter?"checked":"") ?> onclick="showsoal('filter')" type="radio" value="<?= $mtr->materi_id ?>" id="materi_id" name="materi_filter" style="margin-left:10px;"/> <?= $mtr->materi_nm ?> </label>
-                  <?php
-                    }
-                  ?>
-                </div>
-                <div class="col-lg-5" style="display:inline-block;text-align:center;width:100%;">
-                  <?php
-                    foreach ($group as $grp) {
-                    
-                  ?>
-                  <label> <input <?= ($grp->group_soal_id == $this->session->group_filter?"checked":"") ?> onclick="showsoal('filter')" type="radio" value="<?= $grp->group_soal_id ?>" id="group_id" name="group_filter" style="margin-left:10px;"/> <?= $grp->group_nm ?> </label>
-                  <?php
-                    }
-                  ?>
-                </div>
-                <div class="col-lg-1" style="display:inline-block;text-align:right;width:100%;">
-                  <button onclick="showsoal('all')" class="btn btn-secondary">Soal SK</button>
-                </div>
-              </div>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body" id="dv_cardbody">
-                    <?= $soal; ?>
-              </div>
-              <!-- /.card-body -->
+  <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1>Soal</h1>
             </div>
-            <!-- /.card -->
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active">Soal</li>
+              </ol>
+            </div>
+          </div>
+        </div><!-- /.container-fluid -->
+      </section>
 
-        
-          </div>
-          <!-- /.col -->
-        </div>
-        <!-- /.row -->
-      </div>
-      <!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
-    <div class="modal fade" id="modal-lg">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header" style="padding: 0px 10px;">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div id="modal_body" class="modal-body">
+      <!-- Main content -->
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                <div class="col-lg-12">
+                  <div class="col-lg-1" style="display:inline-block;text-align:left;width:100%;">
+                    <button style="margin-bottom:10px;" onclick="tambahsoal()" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">Tambah</button>
+                    <button onclick="tambahsoallatihan()" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">Tambah SK</button>
+                  </div>
+                  <div class="col-lg-4" style="display:inline-block;text-align:center;width:100%;">
+                    <?php
+                      foreach ($materi as $mtr) {
+                    ?>
+                    <label> <input <?= ($mtr->materi_id == $this->session->materi_filter?"checked":"") ?> onclick="showsoal('filter')" type="radio" value="<?= $mtr->materi_id ?>" id="materi_id" name="materi_filter" style="margin-left:10px;"/> <?= $mtr->materi_nm ?> </label>
+                    <?php
+                      }
+                    ?>
+                  </div>
+                  <div class="col-lg-5" style="display:inline-block;text-align:center;width:100%;">
+                    <?php
+                      foreach ($group as $grp) {
+                      
+                    ?>
+                    <label> <input <?= ($grp->group_soal_id == $this->session->group_filter?"checked":"") ?> onclick="showsoal('filter')" type="radio" value="<?= $grp->group_soal_id ?>" id="group_id" name="group_filter" style="margin-left:10px;"/> <?= $grp->group_nm ?> </label>
+                    <?php
+                      }
+                    ?>
+                  </div>
+                  <div class="col-lg-1" style="display:inline-block;text-align:right;width:100%;">
+                    <button onclick="showsoal('all')" class="btn btn-secondary">Soal SK</button>
+                  </div>
+                </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body" id="dv_cardbody">
+                      <?= $soal; ?>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.card -->
 
-          </div>
           
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
         </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-     
-    </div>
-    <div class="d-none" id='loader-wrapper'>
-        <div class="loader"></div>
-      </div>
-  </div>
-  
- 
+        <!-- /.container-fluid -->
+      </section>
+      <!-- /.content -->
+      <div class="modal fade" id="modal-lg">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header" style="padding: 0px 10px;">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="modal_body" class="modal-body">
 
-</div>
+            </div>
+            
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      
+      </div>
+      <div class="d-none" id='loader-wrapper'>
+          <div class="loader"></div>
+        </div>
+    </div>
+    
+  
+
+  </div>
 <!-- ./wrapper -->
 
 

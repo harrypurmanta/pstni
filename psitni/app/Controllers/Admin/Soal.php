@@ -230,8 +230,9 @@ class Soal extends BaseController
         $this->session->set("materi_id_sess",$materi_id);
         $imagefile = $this->request->getFiles();
 
-        $pathSoal = FCPATH . "images/soal/materi/$materi_id";
-        $pathSoalBesar = FCPATH . "images/soal/materi/$materi_id/besar";
+        $pathPembahasan = FCPATH . "images/pembahasan/$materi_id/group/$group_id";
+        $pathSoal = FCPATH . "images/soal/materi/$materi_id/group/$group_id";
+        $pathSoalBesar = FCPATH . "images/soal/materi/$materi_id/group/$group_id/besar";
 
         // buat folder jika belum ada
         if (!is_dir($pathSoal)) {
@@ -248,8 +249,8 @@ class Soal extends BaseController
             foreach($imagefile['soal_img'] as $img){
                if ($img->isValid() && ! $img->hasMoved()){
                     $newName = $img->getClientName();
-                    $img->move("images/soal/materi/$materi_id", $newName);
-                    copy("images/soal/materi/$materi_id/$newName","images/soal/materi/$materi_id/besar/$newName");
+                    $img->move("images/soal/materi/$materi_id/group/$group_id", $newName);
+                    copy("images/soal/materi/$materi_id/group/$group_id/$newName","images/soal/materi/$materi_id/group/$group_id/besar/$newName");
                    }
              }
         }
@@ -258,7 +259,7 @@ class Soal extends BaseController
              foreach($imagefile['pembahasan_img'] as $imgs){
                 if ($imgs->isValid() && ! $imgs->hasMoved()){
                      $pembahasan_img = $imgs->getClientName();
-                     $imgs->move("images/pembahasan/$materi_id", $pembahasan_img);
+                     $imgs->move("images/pembahasan/$materi_id/group/$group_id", $pembahasan_img);
                     //  $imgs->move("../public/images/pembahasan/materi/$materi_id/besar/level/$level_nm", $pembahasan_img);
                     }
               }

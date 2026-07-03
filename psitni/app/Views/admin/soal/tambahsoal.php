@@ -76,6 +76,7 @@
                                         <input class="form-control" type="number" name="no_soal" id="no_soal" value="<?= $no_soal[0]->no_soal+1 ?>">
                                     </div>
                                 </div>
+                                
                                 <div class="col-sm-1">
                                     <label>Kunci</label>
                                     <div class="form-group">
@@ -95,6 +96,11 @@
                                             value="">
                                     </div>
                                 </div>
+                                <div class="row">
+                                            <div class="col-sm-12">
+                                                <button type="button" class="btn btn-primary" onclick="simpansoal(event)">Simpan</button>
+                                            </div>
+                                        </div>
                                 <div class="col-sm-3">
                                     <label>Pembahasan Image</label>
                                     <div class="form-group">
