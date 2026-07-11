@@ -294,6 +294,12 @@
     }
 
     function simpansoal(e) {
+        let btn = $(e.target);
+        if (btn.prop('disabled')) {
+            return;
+        }
+        btn.prop('disabled', true);
+
         let formData = new FormData();
         let materi_id = $("#materi").val();
         let group_id = $("#group_id").val();
@@ -358,6 +364,11 @@
                 processData: false,
                 contentType: false,
                 success: function(data) {
+                    btn.prop('disabled', false);
+                    if (data == "exist") {
+                        Swal.fire("Nomor soal sudah digunakan", "", "warning");
+                        return;
+                    }
                     if (data == "berhasil") {
                         Swal.fire({
                             title: "Soal berhasil di disimpan",
@@ -376,6 +387,7 @@
                     }
                 },
                 error: function() {
+                    btn.prop('disabled', false);
                     alert("error");
                 }
             });

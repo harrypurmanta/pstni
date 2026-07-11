@@ -203,9 +203,11 @@ class Jawabanlatihan extends BaseController
             foreach($imagefile['jawaban_img'] as $img){
                if ($img->isValid() && ! $img->hasMoved()){
                     $newName = $img->getClientName();
-                    $img->move("../public/images/jawaban_latihan/jenis/$jenis", $newName);
-                    
-
+                    $targetDir = FCPATH . "images/jawaban_latihan/jenis/$jenis";
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $img->move($targetDir, $newName);
                    }
              }
         }
@@ -238,7 +240,11 @@ class Jawabanlatihan extends BaseController
             foreach($imagefile['jawaban_img'] as $img){
                if ($img->isValid() && ! $img->hasMoved()){
                     $newName = $img->getClientName();
-                    $img->move("../public/images/jawaban_latihan/jenis/$jenis", $newName);
+                    $targetDir = FCPATH . "images/jawaban_latihan/jenis/$jenis";
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $img->move($targetDir, $newName);
                         $data = [
                             'soal_id' => $soal_id,
                             'jawaban_nm' => $jawaban_nm,

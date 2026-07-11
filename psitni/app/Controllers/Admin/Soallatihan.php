@@ -142,7 +142,10 @@ class Soallatihan extends BaseController
 
         $update = $this->latihanmodel->hapusgambar($jawaban_id);
         if ($update) {
-            unlink("../public/images/jawaban_latihan/jenis/".$jawaban[0]->jenis_id."/".$jawaban[0]->jawaban_img);
+            $filePath = FCPATH . "images/jawaban_latihan/jenis/".$jawaban[0]->jenis_id."/".$jawaban[0]->jawaban_img;
+            if (is_file($filePath)) {
+                unlink($filePath);
+            }
             $ret = "berhasil";
         } else {
             $ret = "gagal";
@@ -160,7 +163,10 @@ class Soallatihan extends BaseController
         $update = $this->latihanmodel->hapusgambarsoal($soal_id);
 
         if ($update) {
-            unlink("../public/images/soal_latihan/jenis/".$soal[0]->jenis_id."/".$soal[0]->soal_img);
+            $filePath = FCPATH . "images/soal_latihan/jenis/".$soal[0]->jenis_id."/".$soal[0]->soal_img;
+            if (is_file($filePath)) {
+                unlink($filePath);
+            }
             $ret = "berhasil";
         } else {
             $ret = "gagal";
@@ -205,9 +211,15 @@ class Soallatihan extends BaseController
         if (isset($imagefile['soal_img'])) {
             foreach($imagefile['soal_img'] as $img){
                if ($img->isValid() && ! $img->hasMoved()){
-                    $newName = $img->getClientName();
-                    $img->move("../public/images/soal_latihan/jenis/$jenis_id", $newName);
-                    copy("../public/images/soal_latihan/jenis/$jenis_id/$newName","../public/images/soal_latihan/jenis/$jenis_id/besar/$newName");
+                    $originalName = $img->getClientName();
+                    $targetDir = FCPATH . "images/soal_latihan/jenis/$jenis_id";
+                    $besarDir = "$targetDir/besar";
+                    if (!is_dir($besarDir)) {
+                        mkdir($besarDir, 0777, true);
+                    }
+                    $img->move($targetDir, $originalName);
+                    $newName = $img->getName();
+                    copy("$targetDir/$newName", "$besarDir/$newName");
                    }
              }
         }
@@ -215,16 +227,16 @@ class Soallatihan extends BaseController
         if (isset($imagefile['pembahasan_img'])) {
              foreach($imagefile['pembahasan_img'] as $imgs){
                 if ($imgs->isValid() && ! $imgs->hasMoved()){
-                     $pembahasan_img = $imgs->getClientName();
-                     $targetPath = "../public/images/pembahasan_latihan/$group_id/$jenis_id";
+                     $pembahasan_original = $imgs->getClientName();
+                     $targetPath = FCPATH . "images/pembahasan_latihan/$group_id/$jenis_id";
 
                     // cek jika folder belum ada, buat otomatis
                     if (!is_dir($targetPath)) {
                         mkdir($targetPath, 0777, true); // recursive = true supaya bisa buat berlapis
                     }
                     
-                     $imgs->move("../public/images/pembahasan_latihan/$group_id/$jenis_id", $pembahasan_img);
-                    //  $imgs->move("../public/images/pembahasan/materi/$materi_id/besar/level/$level_nm", $pembahasan_img);
+                     $imgs->move($targetPath, $pembahasan_original);
+                     $pembahasan_img = $imgs->getName();
                     }
               }
         }
@@ -281,16 +293,19 @@ class Soallatihan extends BaseController
                 'pembahasan' => $pembahasan_nm,
                 'status_cd' => 'normal'
             ];
-        }
-
       
         $soal_id = $this->latihanmodel->simpansoallatihan($data);
         if ($soal_id) {
+            $targetPathJwb = FCPATH . "images/jawaban_latihan/jenis/$jenis_id";
+            if (!is_dir($targetPathJwb)) {
+                mkdir($targetPathJwb, 0777, true);
+            }
+
             if (isset($imagefile['jawaban_img_A'])) {
                 $imgA = $imagefile['jawaban_img_A'][0];
                 if ($imgA->isValid() && ! $imgA->hasMoved()){
                      $jawaban_img_A = $imgA->getClientName();
-                     $imgA->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_A);
+                     $imgA->move($targetPathJwb, $jawaban_img_A);
                  }
                  $dataA = [
                     'soal_id' => $soal_id,
@@ -314,7 +329,7 @@ class Soallatihan extends BaseController
                     $imgB = $imagefile['jawaban_img_B'][0];
                     if ($imgB->isValid() && ! $imgB->hasMoved()){
                          $jawaban_img_B = $imgB->getClientName();
-                         $imgB->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_B);
+                         $imgB->move($targetPathJwb, $jawaban_img_B);
                      }
                      $dataB = [
                         'soal_id' => $soal_id,
@@ -338,7 +353,7 @@ class Soallatihan extends BaseController
                         $imgC = $imagefile['jawaban_img_C'][0];
                         if ($imgC->isValid() && ! $imgC->hasMoved()){
                              $jawaban_img_C = $imgC->getClientName();
-                             $imgC->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_C);
+                             $imgC->move($targetPathJwb, $jawaban_img_C);
                          }
                          $dataC = [
                             'soal_id' => $soal_id,
@@ -362,7 +377,7 @@ class Soallatihan extends BaseController
                             $imgD = $imagefile['jawaban_img_D'][0];
                             if ($imgD->isValid() && ! $imgD->hasMoved()){
                                  $jawaban_img_D = $imgD->getClientName();
-                                 $imgD->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_D);
+                                 $imgD->move($targetPathJwb, $jawaban_img_D);
                              }
                              $dataD = [
                                 'soal_id' => $soal_id,
@@ -388,7 +403,7 @@ class Soallatihan extends BaseController
                                 $imgE = $imagefile['jawaban_img_E'][0];
                                 if ($imgE->isValid() && ! $imgE->hasMoved()){
                                      $jawaban_img_E = $imgE->getClientName();
-                                     $imgE->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_E);
+                                     $imgE->move($targetPathJwb, $jawaban_img_E);
                                  }
                                  $dataE = [
                                     'soal_id' => $soal_id,
@@ -451,6 +466,9 @@ class Soallatihan extends BaseController
         $group_id = $this->request->getPost('group_id');
         $no_soal = $this->request->getPost('no_soal');
         $pembahasan_nm = $this->request->getPost('pembahasan_nm');
+
+        $oldSoal = $this->latihanmodel->getSoalByid($soal_id)->getRow();
+
         // $resLevel = $this->levelmodel->getlevelById($level_id)->getResult();
         $imagefile = $this->request->getFiles();
 
@@ -474,8 +492,25 @@ class Soallatihan extends BaseController
         if (isset($imagefile['soal_img'])) {
             foreach($imagefile['soal_img'] as $img){
                if ($img->isValid() && ! $img->hasMoved()){
-                    $newName = $img->getClientName();
-                    $img->move("../public/images/soal_latihan/jenis/$jenis_id", $newName);
+                    // Delete old question image if it exists
+                    if ($oldSoal && !empty($oldSoal->soal_img)) {
+                        $oldSoalImgPath = FCPATH . "images/soal_latihan/jenis/{$oldSoal->jenis_id}/{$oldSoal->soal_img}";
+                        $oldSoalImgBesarPath = FCPATH . "images/soal_latihan/jenis/{$oldSoal->jenis_id}/besar/{$oldSoal->soal_img}";
+                        if (is_file($oldSoalImgPath)) {
+                            unlink($oldSoalImgPath);
+                        }
+                        if (is_file($oldSoalImgBesarPath)) {
+                            unlink($oldSoalImgBesarPath);
+                        }
+                    }
+
+                    $originalName = $img->getClientName();
+                    $targetDir = FCPATH . "images/soal_latihan/jenis/$jenis_id";
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $img->move($targetDir, $originalName);
+                    $newName = $img->getName();
                    }
              }
         }
@@ -483,8 +518,21 @@ class Soallatihan extends BaseController
         if (isset($imagefile['pembahasan_img'])) {
              foreach($imagefile['pembahasan_img'] as $imgs){
                 if ($imgs->isValid() && ! $imgs->hasMoved()){
-                     $pembahasan_img = $imgs->getClientName();
-                     $imgs->move("../public/images/pembahasan_latihan/$group_id/$jenis_id", $pembahasan_img);
+                     // Delete old pembahasan image if it exists
+                     if ($oldSoal && !empty($oldSoal->pembahasan_img)) {
+                         $oldPembahasanPath = FCPATH . "images/pembahasan_latihan/{$oldSoal->group_id}/{$oldSoal->jenis_id}/{$oldSoal->pembahasan_img}";
+                         if (is_file($oldPembahasanPath)) {
+                             unlink($oldPembahasanPath);
+                         }
+                     }
+
+                     $pembahasan_original = $imgs->getClientName();
+                     $targetPembahasan = FCPATH . "images/pembahasan_latihan/$group_id/$jenis_id";
+                     if (!is_dir($targetPembahasan)) {
+                         mkdir($targetPembahasan, 0777, true);
+                     }
+                     $imgs->move($targetPembahasan, $pembahasan_original);
+                     $pembahasan_img = $imgs->getName();
                     }
               }
         }
@@ -542,11 +590,16 @@ class Soallatihan extends BaseController
         $update = $this->latihanmodel->updatesoal($soal_id,$data);
         
         if ($update) {
+            $targetPathJwb = FCPATH . "images/jawaban_latihan/jenis/$jenis_id";
+            if (!is_dir($targetPathJwb)) {
+                mkdir($targetPathJwb, 0777, true);
+            }
+
             if (isset($imagefile['jawaban_img_A'])) {
                 $imgA = $imagefile['jawaban_img_A'][0];
                 if ($imgA->isValid() && ! $imgA->hasMoved()){
                      $jawaban_img_A = $imgA->getRandomName();
-                     $imgA->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_A);
+                     $imgA->move($targetPathJwb, $jawaban_img_A);
                  }
                  $dataA = [
                     'soal_id' => $soal_id,
@@ -571,7 +624,7 @@ class Soallatihan extends BaseController
                     $imgB = $imagefile['jawaban_img_B'][0];
                     if ($imgB->isValid() && ! $imgB->hasMoved()){
                          $jawaban_img_B = $imgB->getRandomName();
-                         $imgB->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_B);
+                         $imgB->move($targetPathJwb, $jawaban_img_B);
                      }
                      $dataB = [
                         'soal_id' => $soal_id,
@@ -595,7 +648,7 @@ class Soallatihan extends BaseController
                         $imgC = $imagefile['jawaban_img_C'][0];
                         if ($imgC->isValid() && ! $imgC->hasMoved()){
                              $jawaban_img_C = $imgC->getRandomName();
-                             $imgC->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_C);
+                             $imgC->move($targetPathJwb, $jawaban_img_C);
                          }
                          $dataC = [
                             'soal_id' => $soal_id,
@@ -619,7 +672,7 @@ class Soallatihan extends BaseController
                             $imgD = $imagefile['jawaban_img_D'][0];
                             if ($imgD->isValid() && ! $imgD->hasMoved()){
                                  $jawaban_img_D = $imgD->getRandomName();
-                                 $imgD->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_D);
+                                 $imgD->move($targetPathJwb, $jawaban_img_D);
                              }
                              $dataD = [
                                 'soal_id' => $soal_id,
@@ -643,7 +696,7 @@ class Soallatihan extends BaseController
                                 $imgE = $imagefile['jawaban_img_E'][0];
                                 if ($imgE->isValid() && ! $imgE->hasMoved()){
                                      $jawaban_img_E = $imgE->getRandomName();
-                                     $imgE->move("../public/images/jawaban_latihan/jenis/$jenis_id", $jawaban_img_E);
+                                     $imgE->move($targetPathJwb, $jawaban_img_E);
                                  }
                                  $dataE = [
                                     'soal_id' => $soal_id,

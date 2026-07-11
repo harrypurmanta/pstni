@@ -101,7 +101,7 @@
                                         if ($keySoal->soal_img != "") {
                                     ?>
                                     <div id="dv_soalimg_<?= $keySoal->soal_id ?>">
-                                            <img src="/images/soal/materi/<?= $keySoal->materi ?>/group/<?= $keySoal->group_id ?>/<?= $keySoal->soal_img ?>" alt="" width="200" height="200">
+                                            <img src="/images/soal/materi/<?= $keySoal->materi ?>/group/<?= $keySoal->group_id ?>/<?= $keySoal->soal_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                             <button onclick="hapusgambarsoal(<?= $keySoal->soal_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                     </div>
                                     <?php } ?>
@@ -116,7 +116,7 @@
                                         if ($keySoal->pembahasan_img != "") {
                                     ?>
                                     <div id="dv_soalimg_<?= $keySoal->soal_id ?>">
-                                        <img src="/images/pembahasan/<?= $keySoal->materi ?>/<?= $keySoal->pembahasan_img ?>" alt="" width="200" height="200">
+                                        <img src="/images/pembahasan/<?= $keySoal->materi ?>/<?= $keySoal->pembahasan_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                         <button onclick="hapusgambarpembsoal(<?= $keySoal->soal_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                     </div>
                                     <?php } ?>
@@ -173,7 +173,7 @@
                                                             if ($jawaban[0]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= $jawaban[0]->jawaban_id ?>">
-                                                                <img src="/images/jawaban/materi/<?= $jawaban[0]->materi ?>/group/<?= $jawaban[0]->group_id ?>/<?= $jawaban[0]->jawaban_img ?>" alt="" width="200" height="200">
+                                                                <img src="/images/jawaban/materi/<?= $jawaban[0]->materi ?>/group/<?= $jawaban[0]->group_id ?>/<?= $jawaban[0]->jawaban_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= $jawaban[0]->jawaban_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>
@@ -200,7 +200,7 @@
                                                             if ($jawaban[1]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= $jawaban[1]->jawaban_id ?>">
-                                                                <img src="/images/jawaban/materi/<?= $jawaban[1]->materi ?>/group/<?= $jawaban[0]->group_id ?>/<?= $jawaban[1]->jawaban_img ?>" alt="" width="200" height="200">
+                                                                <img src="/images/jawaban/materi/<?= $jawaban[1]->materi ?>/group/<?= $jawaban[0]->group_id ?>/<?= $jawaban[1]->jawaban_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= $jawaban[1]->jawaban_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>
@@ -227,7 +227,7 @@
                                                             if (isset($jawaban[2]) && $jawaban[2]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= isset($jawaban[2]) ? $jawaban[2]->jawaban_id : '' ?>">
-                                                                <img src="/images/jawaban/materi/<?= isset($jawaban[2]->materi) ? $jawaban[2]->materi : '' ?>/group/<?= $jawaban[0]->group_id ?>/<?= isset($jawaban[2]->jawaban_img) ? $jawaban[2]->jawaban_img : '' ?>" alt="" width="200" height="200">
+                                                                <img src="/images/jawaban/materi/<?= isset($jawaban[2]->materi) ? $jawaban[2]->materi : '' ?>/group/<?= $jawaban[0]->group_id ?>/<?= isset($jawaban[2]->jawaban_img) ? $jawaban[2]->jawaban_img : '' ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= isset($jawaban[2]->jawaban_id) ? $jawaban[2]->jawaban_id : '' ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>
@@ -254,7 +254,7 @@
                                                             if (isset($jawaban[3]) && $jawaban[3]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= isset($jawaban[3]->jawaban_id) ? $jawaban[3]->jawaban_id : '' ?>">
-                                                                <img src="/images/jawaban/materi/<?= isset($jawaban[3]->materi) ? $jawaban[3]->materi : '' ?>/group/<?= $jawaban[0]->group_id ?>/<?= isset($jawaban[3]->jawaban_img) ? $jawaban[3]->jawaban_img : '' ?>" alt="" width="200" height="200">
+                                                                <img src="/images/jawaban/materi/<?= isset($jawaban[3]->materi) ? $jawaban[3]->materi : '' ?>/group/<?= $jawaban[0]->group_id ?>/<?= isset($jawaban[3]->jawaban_img) ? $jawaban[3]->jawaban_img : '' ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= isset($jawaban[3]->jawaban_id) ? $jawaban[3]->jawaban_id : '' ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>
@@ -281,7 +281,7 @@
                                                             if (isset($jawaban[4]) && $jawaban[4]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= isset($jawaban[4]->jawaban_id) ? $jawaban[4]->jawaban_id : '' ?>">
-                                                                <img src="/images/jawaban/materi/<?= isset($jawaban[4]->materi) ? $jawaban[4]->materi : '' ?>/group/<?= $jawaban[0]->group_id ?>/<?= isset($jawaban[4]->jawaban_img) ? $jawaban[4]->jawaban_img : '' ?>" alt="" width="200" height="200">
+                                                                <img src="/images/jawaban/materi/<?= isset($jawaban[4]->materi) ? $jawaban[4]->materi : '' ?>/group/<?= $jawaban[0]->group_id ?>/<?= isset($jawaban[4]->jawaban_img) ? $jawaban[4]->jawaban_img : '' ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= isset($jawaban[4]->jawaban_id) ? $jawaban[4]->jawaban_id : '' ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>

@@ -101,7 +101,7 @@
                                         if ($keySoal->soal_img != "") {
                                     ?>
                                     <div id="dv_soalimg_<?= $keySoal->soal_id ?>">
-                                            <img src="<?= base_url() ?>/images/soal_latihan/jenis/<?= $keySoal->jenis_id ?>/<?= $keySoal->soal_img ?>" alt="" width="200" height="200">
+                                            <img src="<?= base_url() ?>/images/soal_latihan/jenis/<?= $keySoal->jenis_id ?>/<?= $keySoal->soal_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                             <button onclick="hapusgambarsoal(<?= $keySoal->soal_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                     </div>
                                     <?php } ?>
@@ -116,7 +116,7 @@
                                         if ($keySoal->pembahasan_img != "") {
                                     ?>
                                     <div id="dv_soalimg_<?= $keySoal->soal_id ?>">
-                                        <img src="<?= base_url() ?>/images/pembahasan_latihan/<?= $keySoal->group_id ?>/<?= $keySoal->jenis_id ?>/<?= $keySoal->pembahasan_img ?>" alt="" width="200" height="200">
+                                        <img src="<?= base_url() ?>/images/pembahasan_latihan/<?= $keySoal->group_id ?>/<?= $keySoal->jenis_id ?>/<?= $keySoal->pembahasan_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                         <button onclick="hapusgambarpembsoal(<?= $keySoal->soal_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                     </div>
                                     <?php } ?>
@@ -174,7 +174,7 @@
                                                             if (isset($jawaban[0]->pilihan_nm) && $jawaban[0]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= $jawaban[0]->jawaban_id ?>">
-                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[0]->jenis_id ?>/<?= $jawaban[0]->jawaban_img ?>" alt="" width="200" height="200">
+                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[0]->jenis_id ?>/<?= $jawaban[0]->jawaban_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= $jawaban[0]->jawaban_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>
@@ -201,7 +201,7 @@
                                                             if (isset($jawaban[1]->pilihan_nm) && $jawaban[1]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= $jawaban[1]->jawaban_id ?>">
-                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[1]->jenis_id ?>/<?= $jawaban[1]->jawaban_img ?>" alt="" width="200" height="200">
+                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[1]->jenis_id ?>/<?= $jawaban[1]->jawaban_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= $jawaban[1]->jawaban_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>
@@ -228,7 +228,7 @@
                                                             if (isset($jawaban[2]->pilihan_nm) && $jawaban[2]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= $jawaban[2]->jawaban_id ?>">
-                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[2]->jenis_id ?>/<?= $jawaban[2]->jawaban_img ?>" alt="" width="200" height="200">
+                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[2]->jenis_id ?>/<?= $jawaban[2]->jawaban_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= $jawaban[2]->jawaban_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>
@@ -255,7 +255,7 @@
                                                             if (isset($jawaban[3]->pilihan_nm) && $jawaban[3]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= $jawaban[3]->jawaban_id ?>">
-                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[3]->jenis_id ?>/<?= $jawaban[3]->jawaban_img ?>" alt="" width="200" height="200">
+                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[3]->jenis_id ?>/<?= $jawaban[3]->jawaban_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= $jawaban[3]->jawaban_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>
@@ -282,7 +282,7 @@
                                                             if (isset($jawaban[4]->pilihan_nm) && $jawaban[4]->jawaban_img != "") {
                                                         ?>
                                                             <div id="dv_jwbimg_<?= $jawaban[4]->jawaban_id ?>">
-                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[4]->jenis_id ?>/<?= $jawaban[4]->jawaban_img ?>" alt="" width="200" height="200">
+                                                                <img src="<?= base_url() ?>/images/jawaban_latihan/jenis/<?= $jawaban[4]->jenis_id ?>/<?= $jawaban[4]->jawaban_img ?>?v=<?= time() ?>" alt="" width="200" height="200">
                                                                 <button onclick="hapusgambar(<?= $jawaban[4]->jawaban_id ?>)" style="position: absolute;" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                             </div>
                                                         <?php } ?>

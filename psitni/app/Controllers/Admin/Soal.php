@@ -228,6 +228,12 @@ class Soal extends BaseController
 
         $this->session->set("group_id_sess",$group_id);
         $this->session->set("materi_id_sess",$materi_id);
+
+        $checkNoSoal = $this->soalmodel->checkNoSoalExist(0, $no_soal, $group_id, $materi_id)->getResult();
+        if (count($checkNoSoal) > 0) {
+            echo json_encode("exist");
+            exit;
+        }
         $imagefile = $this->request->getFiles();
 
         $pathPembahasan = FCPATH . "images/pembahasan/$materi_id/group/$group_id";
@@ -248,9 +254,10 @@ class Soal extends BaseController
         if (isset($imagefile['soal_img'])) {
             foreach($imagefile['soal_img'] as $img){
                if ($img->isValid() && ! $img->hasMoved()){
-                    $newName = $img->getClientName();
-                    $img->move("images/soal/materi/$materi_id/group/$group_id", $newName);
-                    copy("images/soal/materi/$materi_id/group/$group_id/$newName","images/soal/materi/$materi_id/group/$group_id/besar/$newName");
+                    $originalName = $img->getClientName();
+                    $img->move($pathSoal, $originalName);
+                    $newName = $img->getName();
+                    copy("$pathSoal/$newName", "$pathSoalBesar/$newName");
                    }
              }
         }
@@ -258,9 +265,9 @@ class Soal extends BaseController
         if (isset($imagefile['pembahasan_img'])) {
              foreach($imagefile['pembahasan_img'] as $imgs){
                 if ($imgs->isValid() && ! $imgs->hasMoved()){
-                     $pembahasan_img = $imgs->getClientName();
-                     $imgs->move("images/pembahasan/$materi_id/group/$group_id", $pembahasan_img);
-                    //  $imgs->move("../public/images/pembahasan/materi/$materi_id/besar/level/$level_nm", $pembahasan_img);
+                     $pembahasan_original = $imgs->getClientName();
+                     $imgs->move($pathPembahasan, $pembahasan_original);
+                     $pembahasan_img = $imgs->getName();
                     }
               }
         }
@@ -327,7 +334,7 @@ class Soal extends BaseController
                 $imgA = $imagefile['jawaban_img_A'][0];
                 if ($imgA->isValid() && ! $imgA->hasMoved()){
                      $jawaban_img_A = $imgA->getClientName();
-                     $imgA->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_A);
+                     $imgA->move($pathJawaban, $jawaban_img_A);
                  }
                  $dataA = [
                     'soal_id' => $soal_id,
@@ -351,7 +358,7 @@ class Soal extends BaseController
                     $imgB = $imagefile['jawaban_img_B'][0];
                     if ($imgB->isValid() && ! $imgB->hasMoved()){
                          $jawaban_img_B = $imgB->getClientName();
-                         $imgB->move("../public/images/jawaban/materi/$materi_id", $jawaban_img_B);
+                         $imgB->move($pathJawaban, $jawaban_img_B);
                      }
                      $dataB = [
                         'soal_id' => $soal_id,
@@ -375,7 +382,7 @@ class Soal extends BaseController
                         $imgC = $imagefile['jawaban_img_C'][0];
                         if ($imgC->isValid() && ! $imgC->hasMoved()){
                              $jawaban_img_C = $imgC->getClientName();
-                             $imgC->move("../public/images/jawaban/materi/$materi_id", $jawaban_img_C);
+                             $imgC->move($pathJawaban, $jawaban_img_C);
                          }
                          $dataC = [
                             'soal_id' => $soal_id,
@@ -399,7 +406,7 @@ class Soal extends BaseController
                             $imgD = $imagefile['jawaban_img_D'][0];
                             if ($imgD->isValid() && ! $imgD->hasMoved()){
                                  $jawaban_img_D = $imgD->getClientName();
-                                 $imgD->move("../public/images/jawaban/materi/$materi_id", $jawaban_img_D);
+                                 $imgD->move($pathJawaban, $jawaban_img_D);
                              }
                              $dataD = [
                                 'soal_id' => $soal_id,
@@ -425,7 +432,7 @@ class Soal extends BaseController
                                 $imgE = $imagefile['jawaban_img_E'][0];
                                 if ($imgE->isValid() && ! $imgE->hasMoved()){
                                      $jawaban_img_E = $imgE->getClientName();
-                                     $imgE->move("../public/images/jawaban/materi/$materi_id", $jawaban_img_E);
+                                     $imgE->move($pathJawaban, $jawaban_img_E);
                                  }
                                  $dataE = [
                                     'soal_id' => $soal_id,
@@ -489,6 +496,8 @@ class Soal extends BaseController
         $no_soal = $this->request->getPost('no_soal');
         $pembahasan_nm = $this->request->getPost('pembahasan_nm');
 
+        $oldSoal = $this->soalmodel->getSoalByid($soal_id)->getRow();
+
         $checkNoSoal = $this->soalmodel->checkNoSoalExist($soal_id, $no_soal, $group_id, $materi_id)->getResult();
         if (count($checkNoSoal) > 0) {
             $ret = json_encode(["respon" => "exist"]);
@@ -516,9 +525,27 @@ class Soal extends BaseController
         if (isset($imagefile['soal_img'])) {
             foreach($imagefile['soal_img'] as $img){
                if ($img->isValid() && ! $img->hasMoved()){
-                    $newName = $img->getClientName();
-                    $img->move("../public/images/soal/materi/$materi_id", $newName);
-                    copy("../public/images/soal/materi/$materi_id/$newName","../public/images/soal/materi/$materi_id/group/$group_id/besar/$newName");
+                    // Delete old question image if it exists
+                    if ($oldSoal && !empty($oldSoal->soal_img)) {
+                        $oldSoalImgPath = FCPATH . "images/soal/materi/{$oldSoal->materi}/group/{$oldSoal->group_id}/{$oldSoal->soal_img}";
+                        $oldSoalImgBesarPath = FCPATH . "images/soal/materi/{$oldSoal->materi}/group/{$oldSoal->group_id}/besar/{$oldSoal->soal_img}";
+                        if (is_file($oldSoalImgPath)) {
+                            unlink($oldSoalImgPath);
+                        }
+                        if (is_file($oldSoalImgBesarPath)) {
+                            unlink($oldSoalImgBesarPath);
+                        }
+                    }
+
+                    $originalName = $img->getClientName();
+                    $targetDir = FCPATH . "images/soal/materi/$materi_id/group/$group_id";
+                    $besarDir = "$targetDir/besar";
+                    if (!is_dir($besarDir)) {
+                        mkdir($besarDir, 0777, true);
+                    }
+                    $img->move($targetDir, $originalName);
+                    $newName = $img->getName();
+                    copy("$targetDir/$newName", "$besarDir/$newName");
                    }
              }
         }
@@ -526,9 +553,21 @@ class Soal extends BaseController
         if (isset($imagefile['pembahasan_img'])) {
              foreach($imagefile['pembahasan_img'] as $imgs){
                 if ($imgs->isValid() && ! $imgs->hasMoved()){
-                     $pembahasan_img = $imgs->getClientName();
-                     $imgs->move("../public/images/pembahasan/$materi_id", $pembahasan_img);
-                    //  $imgs->move("../public/images/pembahasan/materi/$materi_id/besar/level/$level_nm", $pembahasan_img);
+                     // Delete old pembahasan image if it exists
+                     if ($oldSoal && !empty($oldSoal->pembahasan_img)) {
+                         $oldPembahasanPath = FCPATH . "images/pembahasan/{$oldSoal->materi}/{$oldSoal->pembahasan_img}";
+                         if (is_file($oldPembahasanPath)) {
+                             unlink($oldPembahasanPath);
+                         }
+                     }
+
+                     $pembahasan_original = $imgs->getClientName();
+                     $targetPembahasan = FCPATH . "images/pembahasan/$materi_id";
+                     if (!is_dir($targetPembahasan)) {
+                         mkdir($targetPembahasan, 0777, true);
+                     }
+                     $imgs->move($targetPembahasan, $pembahasan_original);
+                     $pembahasan_img = $imgs->getName();
                     }
               }
         }
@@ -587,11 +626,16 @@ class Soal extends BaseController
         $updatesoal = $this->soalmodel->updatesoal($soal_id, $data);
 
         if ($updatesoal) {
+            $targetPathJwb = FCPATH . "images/jawaban/materi/$materi_id/group/$group_id";
+            if (!is_dir($targetPathJwb)) {
+                mkdir($targetPathJwb, 0777, true);
+            }
+
             if (isset($imagefile['jawaban_img_A'])) {
                 $imgA = $imagefile['jawaban_img_A'][0];
                 if ($imgA->isValid() && ! $imgA->hasMoved()){
                      $jawaban_img_A = $imgA->getClientName();
-                     $imgA->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_A);
+                     $imgA->move($targetPathJwb, $jawaban_img_A);
                  }
                  $dataA = [
                     'soal_id' => $soal_id,
@@ -615,7 +659,7 @@ class Soal extends BaseController
                     $imgB = $imagefile['jawaban_img_B'][0];
                     if ($imgB->isValid() && ! $imgB->hasMoved()){
                          $jawaban_img_B = $imgB->getClientName();
-                         $imgB->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_B);
+                         $imgB->move($targetPathJwb, $jawaban_img_B);
                      }
                      $dataB = [
                         'soal_id' => $soal_id,
@@ -639,7 +683,7 @@ class Soal extends BaseController
                         $imgC = $imagefile['jawaban_img_C'][0];
                         if ($imgC->isValid() && ! $imgC->hasMoved()){
                              $jawaban_img_C = $imgC->getClientName();
-                             $imgC->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_C);
+                             $imgC->move($targetPathJwb, $jawaban_img_C);
                          }
                          $dataC = [
                             'soal_id' => $soal_id,
@@ -663,7 +707,7 @@ class Soal extends BaseController
                             $imgD = $imagefile['jawaban_img_D'][0];
                             if ($imgD->isValid() && ! $imgD->hasMoved()){
                                  $jawaban_img_D = $imgD->getClientName();
-                                 $imgD->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_D);
+                                 $imgD->move($targetPathJwb, $jawaban_img_D);
                              }
                              $dataD = [
                                 'soal_id' => $soal_id,
@@ -689,7 +733,7 @@ class Soal extends BaseController
                                 $imgE = $imagefile['jawaban_img_E'][0];
                                 if ($imgE->isValid() && ! $imgE->hasMoved()){
                                      $jawaban_img_E = $imgE->getClientName();
-                                     $imgE->move("../public/images/jawaban/materi/$materi_id/group/$group_id", $jawaban_img_E);
+                                     $imgE->move($targetPathJwb, $jawaban_img_E);
                                  }
                                  $dataE = [
                                     'soal_id' => $soal_id,
@@ -880,7 +924,11 @@ class Soal extends BaseController
             if ($v['id'] == "new") {
                 if ($imagefile["jawaban_img"][$i]->isValid() && ! $imagefile["jawaban_img"][$i]->hasMoved()){
                     $newName = $soal_id.$pilihan_nm[$i];
-                    $imagefile["jawaban_img"][$i]->move("../public/images/materi/".$this->session->materi_filter."/", $newName);
+                    $targetDir = FCPATH . "images/materi/".$this->session->materi_filter."/";
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $imagefile["jawaban_img"][$i]->move($targetDir, $newName);
                 }
 
                 $data = [
