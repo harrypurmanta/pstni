@@ -14,6 +14,7 @@ $request = \Config\Services::request();
     <link rel="stylesheet" href="<?= base_url() ?>/bower_components/Ionicons/css/ionicons.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>/dist/css/AdminLTE.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>/dist/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="<?= base_url() ?>/plugins/sweetalert2/sweetalert2.css">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
     <style>
@@ -211,6 +212,23 @@ $request = \Config\Services::request();
             display: block !important;
         }
 
+        #dv_main_jawaban.horizontal_layout {
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+        }
+
+        #dv_main_jawaban.horizontal_layout .jawaban_dv {
+            width: auto !important;
+            flex: 1 1 0px !important;
+            min-width: 150px !important;
+            text-align: center !important;
+        }
+
+        #dv_main_jawaban.horizontal_layout .jawaban_dv img {
+            margin: 5px auto 0 auto !important;
+        }
+
     </style>
 </head>
 
@@ -234,15 +252,20 @@ $request = \Config\Services::request();
 
                                 <input type="hidden" id="inp_group_id">
 
-                                <!-- Wrapper Scroll -->
-                                <div class="tahapan-wrapper">
-                                    <?php foreach ($group as $key) { ?>
-                                        <div class="tahapan-item 
-                                            <?= ($request->uri->getSegment(4) == $key->group_soal_id ? 'active' : '') ?>">
-                                            <?= $key->group_nm ?>
-                                        </div>
-                                    <?php } ?>
-                                </div>
+                                 <!-- Wrapper Scroll -->
+                                 <div class="tahapan-wrapper">
+                                     <?php 
+                                     $active_group_id = $request->uri->getSegment(4);
+                                     if (empty($active_group_id) && isset($soal[0])) {
+                                         $active_group_id = $soal[0]->group_id;
+                                     }
+                                     foreach ($group as $key) { ?>
+                                         <div class="tahapan-item 
+                                             <?= ($active_group_id == $key->group_soal_id ? 'active' : '') ?>">
+                                             <?= $key->group_nm ?>
+                                         </div>
+                                     <?php } ?>
+                                 </div>
 
                             </div>
 
@@ -273,9 +296,22 @@ $request = \Config\Services::request();
                                     <input type="hidden" value="1" id="inp_no_soal">
                                     <input type="hidden" value="<?= $soal[0]->kolom_id ?>" id="inp_kolom_id">
                                 </div>
-                                <div id="dv_main_jawaban">
+                                <?php
+                                    $is_img_jawaban = false;
+                                    foreach ($jawaban as $jwb) {
+                                        if (!empty($jwb->jawaban_img)) {
+                                            $is_img_jawaban = true;
+                                            break;
+                                        }
+                                    }
+                                ?>
+                                <div id="dv_main_jawaban" class="<?= $is_img_jawaban ? 'horizontal_layout' : '' ?>">
                                     <?php
                                         foreach ($jawaban as $key) {
+                                            $img_jwb = "";
+                                            if (!empty($key->jawaban_img)) {
+                                                $img_jwb = "<img style='max-width:350px;height:100%;' src='".base_url()."/images/jawaban/materi/".$soal[0]->materi."/group/".$soal[0]->group_id."/".$key->jawaban_img."'>";
+                                            }
                                     ?>
                                     <div id="dv_jawaban_<?= $key->jawaban_id ?>"
                                         onclick="selectJawaban(<?= $key->jawaban_id ?>,'<?= $key->pilihan_nm ?>')"
@@ -283,6 +319,7 @@ $request = \Config\Services::request();
                                         style="margin-top:10px;margin-bottom:10px;background-color:#aeaebb;border-radius:5px;text-align: left;">
                                         <label for="pilihan_nm"><?= $key->pilihan_nm ?>.</label>
                                         <span><?= $key->jawaban_nm ?></span>
+                                        <div><?= $img_jwb ?></div>
                                     </div>
                                     <?php } ?>
                                 </div>
@@ -317,6 +354,7 @@ $request = \Config\Services::request();
     <script src="<?= base_url() ?>/bower_components/fastclick/lib/fastclick.js"></script>
     <script src="<?= base_url() ?>/dist/js/adminlte.min.js"></script>
     <script src="<?= base_url() ?>/plugins/ekko-lightbox/ekko-lightbox.min.js"></script>
+    <script src="<?= base_url() ?>/plugins/sweetalert2/sweetalert2.js"></script>
     <script>
     $(document).on('click', '[data-toggle="lightbox"]', function(event) {
         event.preventDefault();
@@ -327,11 +365,19 @@ $request = \Config\Services::request();
     });
 
     var timers;
-    $(document).ready(function() {
-        setTimeout(() => {
-            startujian("start");
-        }, 1000);
-    });
+     $(document).ready(function() {
+         // Auto-scroll the active stage tab into view on page load
+         setTimeout(() => {
+             let activeTab = document.querySelector('.tahapan-item.active');
+             if (activeTab) {
+                 activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+             }
+         }, 100);
+
+         setTimeout(() => {
+             startujian("start");
+         }, 1000);
+     });
 
     function selectJawaban(jawaban_id, pilihan_nm) {
         let dv = document.getElementsByClassName("jawaban_dv");
@@ -358,7 +404,7 @@ $request = \Config\Services::request();
         let jawaban_id = $("#inp_jawaban_id").val();
         let group_id = <?= $request->uri->getSegment(4) ?>;
         let no_soal = $("#inp_no_soal").val();
-        let pilihan_nm = (group_id == 7) ? $("#inp_pilihan_nm_7").val() : $("#inp_pilihan_nm").val();
+        let pilihan_nm = (group_id == 7 && parseInt(no_soal) >= 11 && parseInt(no_soal) <= 20) ? $("#inp_pilihan_nm_7").val() : $("#inp_pilihan_nm").val();
         let kolom_id = $("#inp_kolom_id").val();
         let materi = <?= $request->uri->getSegment(3) ?>;
         let waktu = document.getElementById('countdown').textContent;
@@ -381,14 +427,19 @@ $request = \Config\Services::request();
                 // $("#loader-wrapper").removeClass("d-none")
             },
             success: function(data) {
-                if (data.proc == "selesai") {
+                if (data.status == "jawaban_kosong" || data == "jawaban_kosong") {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Jawaban Belum Dipilih',
+                        text: 'Silakan pilih salah satu jawaban terlebih dahulu sebelum melanjutkan.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
+                } else if (data.proc == "selesai") {
                     let grp_id = group_id + 1;
                     window.location.href = "<?= base_url() ?>/materi/pilihanMateri/" + materi + "/" +
                         grp_id;
                 } else {
-                    if (data == "jawaban_kosong") {
-                        alert("Jawaban belum dipilih");
-                    } else {
                         if (data.no_soal == 1) {
                             window.clearInterval(timers);
                             countdown(600);
@@ -403,12 +454,17 @@ $request = \Config\Services::request();
 
                         // 1. Build Jawaban HTML
                         let jawabanHtml = "";
-                        if (data.group_id == 7) {
+                        $("#dv_main_jawaban").removeClass("horizontal_layout");
+                        if (data.group_id == 7 && parseInt(data.no_soal) >= 11 && parseInt(data.no_soal) <= 20) {
                             jawabanHtml = `<div class='btn col-md-12' style='margin-top:10px;margin-bottom:10px;background-color:#aeaebb;border-radius:5px;text-align: left;'>
                                 <input type='text' class='form-control' name='inp_pilihan_nm_7' id='inp_pilihan_nm_7' placeholder='Jawaban' autocomplete='off' value='${data.pilihan_nmx || ""}' style='color:black;font-size:16px;'>
                             </div>`;
                         } else {
                             if (data.jawaban_list) {
+                                let isImageAnswer = data.jawaban_list.some(key => key.jawaban_img);
+                                if (isImageAnswer) {
+                                    $("#dv_main_jawaban").addClass("horizontal_layout");
+                                }
                                 data.jawaban_list.forEach(key => {
                                     let border = "";
                                     if (data.pilihan_nms == key.pilihan_nm) {
@@ -470,20 +526,18 @@ $request = \Config\Services::request();
 
                         // 4. Build Image Soal HTML
                         let imgSoalHtml = "";
-                        if (data.soal && data.soal.soal_img) {
-                            imgSoalHtml = `<div class='col-sm-10'>
-                                <a href='${data.base_url}/images/soal/materi/${data.soal.materi}/besar/${data.soal.soal_img}' data-toggle='lightbox'>
-                                    <img style='max-width: 350px;max-height: 100%;' src='${data.base_url}/images/soal/materi/${data.soal.materi}/${data.soal.soal_img}' class='img-fluid'>
-                                </a>
-                            </div>`;
-                        }
+                         if (data.soal && data.soal.soal_img) {
+                             imgSoalHtml = `
+                                 <a href='${data.base_url}/images/soal/materi/${data.soal.materi}/group/${group_id}/besar/${data.soal.soal_img}' data-toggle='lightbox'>
+                                     <img style='max-width: 350px;max-height: 100%; margin-top: 10px;' src='${data.base_url}/images/soal/materi/${data.soal.materi}/group/${group_id}/${data.soal.soal_img}' class='img-fluid'>
+                                 </a>`;
+                         }
                         $("#dv_img_soal").html(imgSoalHtml);
 
                         setTimeout(() => {
                             selectJawaban(data.jawaban_idx,data.pilihan_nms);
                         }, 10);
                         
-                    }
                 }
 
                 let dv = document.getElementsByClassName("jawaban_dv");

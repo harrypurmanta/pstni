@@ -75,7 +75,7 @@ class Tryout extends BaseController
         if ($jawaban_id == "null") {
 
         } else if ($proc == "next" && $jawaban_id == "" && $pilihan_nm == "") {
-            return $this->response->setJSON("jawaban_kosong");
+            return $this->response->setJSON(["status" => "jawaban_kosong"]);
         } else {
             
             if ($proc == "prev" || $proc == "prevsoal" || $proc == "start") {
@@ -134,24 +134,28 @@ class Tryout extends BaseController
                         $res_ttlsoal = $this->soalmodel->getTotalSoal($group_id,$materi)->getResult();
                     }
 
-                    // Ambil jawaban tersimpan untuk soal aktif saat ini
-                    $current_respon = $this->soalmodel->getResponBox($soal_id,$group_id,$materi,$this->session->user_id)->getResult();
-                    $pilihan_nmx = (count($current_respon)>0) ? $current_respon[0]->pilihan_nm : "";
+                    // Ambil semua jawaban tersimpan untuk group dan materi ini secara sekaligus (bulk)
+                    $all_respon = $this->soalmodel->getResponByGroupMateriUser($group_id, $materi, $this->session->user_id)->getResult();
+                    $respon_map = [];
+                    foreach ($all_respon as $resp) {
+                        $respon_map[$resp->soal_id] = $resp->pilihan_nm;
+                    }
+
+                    $pilihan_nmx = isset($respon_map[$soal_id]) ? $respon_map[$soal_id] : "";
 
                     $box_list = [];
                     foreach ($res_ttlsoal as $boxsoal) {
-                        $getResponBox = $this->soalmodel->getResponBox($boxsoal->soal_id,$group_id,$materi,$this->session->user_id)->getResult();
-                        $has_respon = count($getResponBox) > 0;
+                        $has_respon = isset($respon_map[$boxsoal->soal_id]);
                         $box_list[] = [
                             "no_soal" => (int)$boxsoal->no_soal,
                             "soal_id" => $boxsoal->soal_id,
                             "has_respon" => $has_respon,
-                            "pilihan_nm" => $has_respon ? $getResponBox[0]->pilihan_nm : ""
+                            "pilihan_nm" => $has_respon ? $respon_map[$boxsoal->soal_id] : ""
                         ];
                     }
 
                     $jawaban_list = [];
-                    if ($group_id != 7 && count($res) > 0) {
+                    if (($group_id != 7 || ($group_id == 7 && $no_soal >= 1 && $no_soal <= 10)) && count($res) > 0) {
                         $getjawaban = $this->soalmodel->getjawaban($res[0]->soal_id)->getResult();
                         foreach ($getjawaban as $key) {
                             if ($pilihan_nmx == $key->pilihan_nm) {

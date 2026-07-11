@@ -449,6 +449,16 @@ public function getAllSoalSK() {
                         ->get();
     }
 
+    public function getResponByGroupMateriUser($group_id,$materi,$user_id) {
+        return $this->db->table('respon')
+                        ->select('soal_id, pilihan_nm')
+                        ->where('group_id',$group_id)
+                        ->where('created_user_id',$user_id)
+                        ->where('status_cd','normal')
+                        ->where('materi',$materi)
+                        ->get();
+    }
+
     public function getResponCountByMateriUser($group_id,$materi,$user_id) {
         return $this->db->table('respon')
                         ->select('count(respon_id) as jumlah_jawab')
