@@ -14,10 +14,15 @@ class Login extends BaseController
 
 	public function index()
 	{
-		$db = \Config\Database::connect();
-		$query = $db->table('soal')->where('materi', 9)->where('group_id', 7)->where('status_cd', 'normal')->get();
-		$res = $query->getResultArray();
-		echo "<pre>"; print_r($res); echo "</pre>"; exit;
+		if ($this->session->get("user_nm") != "") {
+            if ($this->session->get("user_group") == "siswa") {
+                return redirect()->to('home');
+            } else {
+                return redirect()->to('admin');
+            }
+        }
+        return view('login');
+		
 	}
 
 	public function register()
