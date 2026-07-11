@@ -47,6 +47,8 @@ $routes->get('login/simpanregister', '\App\Controllers\Login::simpanregister');
 $routes->post('login/simpanregister', '\App\Controllers\Login::simpanregister');
 
 $routes->get('home', '\App\Controllers\Home::index');
+$routes->get('profile', '\App\Controllers\Profile::index');
+$routes->post('profile/update', '\App\Controllers\Profile::update');
 $routes->get('passhand/petunjuksoal', '\App\Controllers\Passhand::petunjuksoal');
 $routes->post('passhand/petunjuksoal', '\App\Controllers\Passhand::petunjuksoal');
 $routes->get('passhand/startujian', '\App\Controllers\Passhand::startujian');

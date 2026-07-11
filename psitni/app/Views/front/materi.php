@@ -41,8 +41,11 @@
                                         $click = base_url()."/tryout/hasiltryout/".$key->materi_id."/8";
                                         $class_bg = "bg-green";
                                     } else {
-                                        $click = base_url()."/materi/riwayathidup/".$key->materi_id."/1";
-                                        // $click = base_url()."/materi/pilihanMateri/".$key->materi_id."/1";
+                                        if ($key->materi_id == 1) {
+                                            $click = base_url()."/materi/riwayathidup/".$key->materi_id."/1";
+                                        } else {
+                                            $click = base_url()."/materi/pilihanMateri/".$key->materi_id."/1";
+                                        }
                                         $class_bg = "bg-gray";
                                     }
                             ?>
