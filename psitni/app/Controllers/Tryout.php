@@ -312,11 +312,11 @@ class Tryout extends BaseController
         $user_id = $this->session->user_id;
         $materi_id = $request->uri->getSegment(3);
         $group_id = $request->uri->getSegment(4);
-        $getRespon = $this->soalmodel->getResponPaket($group_id,$materi_id,$user_id)->getResult();
+        $getRespon = $this->soalmodel->getResponPaket($group_id, $materi_id, $user_id)->getResult();
 
         $hasil = [];
-        $lastUsed = $this->soalmodel->getLastUsedPauli($user_id, $group_id, $materi_id)->getRow();
-        $user = $this->usersmodel->getbyUserId($user_id)->getResult();
+        // $lastUsed = $this->soalmodel->getLastUsedPauli($user_id, $group_id, $materi_id)->getRow();
+        // $user = $this->usersmodel->getbyUserId($user_id)->getResult();
         for ($i = 1; $i <= 4; $i++) {
             $hasil[$i] = $this->soalmodel
                 ->getHasilPauliByUserUsed(

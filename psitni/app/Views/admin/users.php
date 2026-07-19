@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin | Users</title>
+  <title>Admin | Data Users</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -13,24 +13,35 @@
   <link rel="stylesheet" href="<?= base_url() ?>/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url() ?>/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= base_url() ?>/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="<?= base_url() ?>/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url() ?>/dist/dist/css/adminlte.min.css">
+
+  <style>
+    .btn-group .btn {
+      margin: 0 2px;
+      border-radius: 4px !important;
+    }
+    .table td, .table th {
+      vertical-align: middle !important;
+    }
+  </style>
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
- <!-- Navbar -->
- 
-
- <?= $this->include('admin/navbar') ?>
+  <!-- Navbar -->
+  <?= $this->include('admin/navbar') ?>
   <!-- /.navbar -->
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Data Users</h1>
+            <h1 class="m-0 text-dark"><i class="fas fa-users-cog mr-2"></i> Managemen Data Users</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -47,51 +58,79 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-              <button onclick="tambahuser()" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">Tambah</button>
+            <div class="card card-primary card-outline shadow">
+              <div class="card-header d-flex align-items-center justify-content-between">
+                <h3 class="card-title"><i class="fas fa-table mr-1"></i> Daftar Pengguna</h3>
+                <button onclick="tambahuser()" class="btn btn-success ml-auto" data-toggle="modal" data-target="#modal-lg">
+                  <i class="fas fa-plus mr-1"></i> Tambah User
+                </button>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <table id="example2" class="table table-bordered table-hover">
-                  <thead>
+                <table id="example2" class="table table-bordered table-striped table-hover">
+                  <thead class="bg-light">
                   <tr>
-                    <th style="text-align:center;">No.</th>
-                    <th style="text-align:center;">Nama</th>
-                    <th style="text-align:center;">Satuan</th>
-                    <th style="text-align:center;">TTL</th>
-                    <th style="text-align:center;">Jenis Kelamin</th>
-                    <th style="text-align:center;">Username</th>
-                    <th style="text-align:center;">No. Hp</th>
-                    <th style="text-align:center;">Alamat</th>
-                    <th style="text-align:center;">Level</th>
-                    <th style="text-align:center;">Action</th>
+                    <th class="text-center" style="width: 5%">No.</th>
+                    <th>Nama</th>
+                    <th class="text-center">Satuan</th>
+                    <th class="text-center">TTL</th>
+                    <th class="text-center" style="width: 8%">Gender</th>
+                    <th class="text-center">Username</th>
+                    <th class="text-center">No. HP</th>
+                    <th>Alamat</th>
+                    <th class="text-center" style="width: 8%">Level</th>
+                    <th class="text-center" style="width: 15%">Aksi</th>
                   </tr>
                   </thead>
                   <tbody>
                     <?php 
                     $no = 1;
-                        foreach ($users as $key) {
-                         
+                    foreach ($users as $key) {
                     ?>
                   <tr>
-                    <td style="text-align:center;"><?= $no++ ?></td>
-                    <td><?= $key->person_nm ?></td>
-                    <td style="text-align:center;"><?= $key->satuan ?></td>
-                    <td style="text-align:center;"><?= $key->birth_place ?>, <?= $key->birth_dttm ?></td>
-                    <td style="text-align:center;"><?= $key->gender_cd ?></td>
-                    <td style="text-align:center;"><?= $key->user_nm ?></td>
-                    <td style="text-align:center;"><?= $key->cellphone ?></td>
-                    <td><?= $key->addr_txt ?></td>
-                    <td><?= $key->user_group ?></td>
-                    <td style="text-align:center;"><button onclick="editperson(<?= $key->person_id ?>)" style="font-size:10px;" class="btn btn-secondary" data-toggle="modal" data-target="#modal-lg"><i class="fa fa-pencil-alt"></i></button> <button onclick="hapusperson(<?= $key->person_id ?>)" style="font-size:10px;" class="btn btn-danger"><i class="fa fa-trash"></i></button> 
-                    <a href="<?= base_url() ?>/admin/hasil/<?= $key->user_id ?>" target="_blank"><button type="button" class="btn btn-primary">Detail</button></a>
-                    <a href="<?= base_url() ?>/admin/users/resetmateri/<?= $key->user_id ?>" target="_blank" class="btn btn-warning">Reset</a> 
-                   
-                  </td>
+                    <td class="text-center font-weight-bold"><?= $no++ ?></td>
+                    <td class="font-weight-bold text-gray-dark"><?= esc($key->person_nm) ?></td>
+                    <td class="text-center"><?= esc($key->satuan) ?></td>
+                    <td class="text-center">
+                      <?= esc($key->birth_place) ?><br>
+                      <small class="text-muted"><i class="far fa-calendar-alt"></i> <?= esc(date("d-m-Y", strtotime($key->birth_dttm))) ?></small>
+                    </td>
+                    <td class="text-center">
+                      <?php if ($key->gender_cd == 'l'): ?>
+                        <span class="badge bg-info"><i class="fas fa-mars mr-1"></i> L</span>
+                      <?php else: ?>
+                        <span class="badge bg-danger"><i class="fas fa-venus mr-1"></i> P</span>
+                      <?php endif; ?>
+                    </td>
+                    <td class="text-center"><code class="text-primary font-weight-bold"><?= esc($key->user_nm) ?></code></td>
+                    <td class="text-center"><?= esc($key->cellphone) ?></td>
+                    <td class="small"><?= esc($key->addr_txt) ?></td>
+                    <td class="text-center">
+                      <?php if ($key->user_group == 'admin'): ?>
+                        <span class="badge badge-danger shadow-sm"><i class="fas fa-user-shield mr-1"></i> Admin</span>
+                      <?php else: ?>
+                        <span class="badge badge-success shadow-sm"><i class="fas fa-user mr-1"></i> Siswa</span>
+                      <?php endif; ?>
+                    </td>
+                    <td class="text-center">
+                      <div class="btn-group">
+                        <button onclick="editperson(<?= $key->person_id ?>)" class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#modal-lg" title="Edit User">
+                          <i class="fa fa-pencil-alt"></i>
+                        </button>
+                        <a href="<?= base_url('admin/hasil/' . $key->user_id) ?>" target="_blank" class="btn btn-sm btn-outline-primary" title="Detail Hasil">
+                          <i class="fa fa-eye"></i> Detail
+                        </a>
+                        <a href="<?= base_url('admin/users/resetmateri/' . $key->user_id) ?>" class="btn btn-sm btn-outline-warning" title="Reset Materi">
+                          <i class="fa fa-sync-alt"></i> Reset
+                        </a>
+                        <button onclick="hapusperson(<?= $key->person_id ?>)" class="btn btn-sm btn-outline-danger" title="Hapus User">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                     <?php
-                        }
+                    }
                     ?>
                   </tbody>
                 </table>
@@ -99,8 +138,6 @@
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
-
-        
           </div>
           <!-- /.col -->
         </div>
@@ -109,36 +146,27 @@
       <!-- /.container-fluid -->
     </section>
     <!-- /.content -->
-    <div class="modal fade" id="modal-lg">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header" style="padding: 0px 10px;">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div id="modal_body" class="modal-body">
 
-          </div>
-          
+    <!-- Modal Dialog -->
+    <div class="modal fade" id="modal-lg">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0" id="modal_content">
+           <!-- Loaded Dynamically via AJAX -->
         </div>
-        <!-- /.modal-content -->
       </div>
-      <!-- /.modal-dialog -->
     </div>
 
   </div>
   <!-- /.content-wrapper -->
+
   <footer class="main-footer">
     <div class="float-right d-none d-sm-block">
       <b>Version</b> 3.2.0
     </div>
     <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
   </footer>
-
 </div>
 <!-- ./wrapper -->
-
 
 <!-- jQuery -->
 <script src="<?= base_url() ?>/plugins/jquery/jquery.min.js"></script>
@@ -151,53 +179,74 @@
 <script src="<?= base_url() ?>/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <script src="<?= base_url() ?>/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
 <script src="<?= base_url() ?>/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="<?= base_url() ?>/plugins/sweetalert2/sweetalert2.min.js"></script>
 <!-- AdminLTE App -->
 <script src="<?= base_url() ?>/dist/dist/js/adminlte.min.js"></script>
-<!-- Page specific script -->
+
 <script>
   $(function () {
     $('#example2').DataTable({
       "paging": true,
-      "lengthChange": false,
+      "lengthChange": true,
       "searching": true,
       "ordering": true,
       "info": true,
-      "autoWidth": true,
+      "autoWidth": false,
       "responsive": true,
+      "language": {
+        "search": "Cari:",
+        "lengthMenu": "Tampilkan _MENU_ data",
+        "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        "paginate": {
+          "first": "Pertama",
+          "last": "Terakhir",
+          "next": "Selanjutnya",
+          "previous": "Sebelumnya"
+        }
+      }
     });
   });
 
   function tambahuser() {
+    $('#modal_content').html('<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-2">Memuat form...</p></div>');
     $.ajax({
         url: "<?= base_url('admin/users/tambahuser') ?>",
         success: function(data) {
-          $('#modal_body').html(data);
+          $('#modal_content').html(data);
         },
-        error: function() {
-          alert("error");
+        error: function(xhr, status, error) {
+          console.error("AJAX Error (tambahuser):", error, xhr.responseText);
+          Swal.fire("Error", "Gagal memuat form tambah user.<br><small class='text-danger'>" + (error || xhr.statusText) + "</small>", "error");
         }
       });
   }
 
   function editperson(person_id) {
+    $('#modal_content').html('<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-2x text-success"></i><p class="mt-2">Memuat form...</p></div>');
     $.ajax({
         url: "<?= base_url('admin/users/edituser') ?>",
         type: "post",
-        dataType: "json",
+        dataType: "html",
         data: {
           "person_id": person_id
         },
         success: function(data) {
-          $('#modal_body').html(data);
+          $('#modal_content').html(data);
         },
-        error: function() {
-          alert("error");
+        error: function(xhr, status, error) {
+          console.error("AJAX Error (editperson):", error, xhr.responseText);
+          let rawError = xhr.responseText ? xhr.responseText.substring(0, 500) : error;
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            html: "Gagal memuat form edit user.<br><pre class='text-danger text-left bg-light p-2 mt-2' style='font-size:11px; max-height:200px; overflow-y:auto; border-radius:4px;'>" + rawError.replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</pre>"
+          });
         }
       });
   }
 
   function simpanuser() {
-    
       var person_nm = $("#person_nm").val();
       var satuan = $("#satuan").val();
       var birth_place = $("#birth_place").val();
@@ -207,6 +256,12 @@
       var user_nm = $("#user_nm").val();
       var gender_cd = $("#gender_cd").val();
       var user_group = $("#user_group").val();
+      var email = $("#email").val();
+
+      if (!person_nm || !user_nm) {
+          Swal.fire("Peringatan", "Nama dan Username wajib diisi!", "warning");
+          return;
+      }
      
       $.ajax({
         url: "<?= base_url('admin/users/simpanuser') ?>",
@@ -221,54 +276,27 @@
             "addr_txt" : addr_txt,
             "user_nm" : user_nm,
             "user_group" : user_group,
-            "gender_cd" : gender_cd
+            "gender_cd" : gender_cd,
+            "email" : email
         },
         success: function(data) {
           $('#modal-lg').modal("hide");
-          alert("Sukses");
-          var table = document.getElementById("example2");
-          var row   = table.insertRow(1);
-          var cell1 = row.insertCell(0);
-          var cell2 = row.insertCell(1);
-          var cell3 = row.insertCell(2);
-          var cell4 = row.insertCell(3);
-          var cell5 = row.insertCell(4);
-          var cell6 = row.insertCell(5);
-          var cell7 = row.insertCell(6);
-          var cell8 = row.insertCell(7);
-          var cell9 = row.insertCell(8);
-          var cell10 = row.insertCell(9);
-          cell1.style.textAlign = "center";
-          cell2.style.textAlign = "center";
-          cell3.style.textAlign = "justify";
-          cell4.style.textAlign = "center";
-          cell5.style.textAlign = "center";
-          cell6.style.textAlign = "center";
-          cell7.style.textAlign = "center";
-          cell8.style.textAlign = "center";
-          cell9.style.textAlign = "center";
-          cell10.style.textAlign = "center";
-          cell1.innerHTML = "new";
-          cell2.innerHTML = person_nm;
-          cell3.innerHTML = satuan;
-          cell4.innerHTML = birth_place+","+birth_dttm;
-          cell8.innerHTML = gender_cd;
-          cell7.innerHTML = user_nm;
-          cell5.innerHTML = cellphone;
-          cell6.innerHTML = addr_txt;
-          cell8.innerHTML = user_group;
-          cell9.innerHTML = "<button data-toggle='modal' data-target='#modal-lg' onclick='editperson("+data.person_id+")' style='font-size:10px;' class='btn btn-secondary'>Edit</button> <button style='font-size:10px;' class='btn btn-danger' onclick='hapuspersom("+data.person_id+")'>Hapus</button>";
+          Swal.fire({
+              icon: 'success',
+              title: 'Berhasil',
+              text: 'User baru telah berhasil ditambahkan!'
+          }).then(() => {
+              location.reload();
+          });
         },
         error: function() {
-          alert("error");
+          Swal.fire("Error", "Gagal menyimpan user baru", "error");
         }
       });
   }
-  
 
   function updateuser(person_id) {
-    
-    var person_nm = $("#person_nm").val();
+      var person_nm = $("#person_nm").val();
       var satuan = $("#satuan").val();
       var birth_place = $("#birth_place").val();
       var birth_dttm = $("#birth_dttm").val();
@@ -277,13 +305,19 @@
       var user_nm = $("#user_nm").val();
       var gender_cd = $("#gender_cd").val();
       var user_group = $("#user_group").val();
-   
-    $.ajax({
-      url: "<?= base_url('admin/users/updateuser') ?>",
-      type: "post",
-      dataType: "json",
-      data: {
-        "person_nm" : person_nm,
+      var email = $("#email").val();
+
+      if (!person_nm || !user_nm) {
+          Swal.fire("Peringatan", "Nama dan Username wajib diisi!", "warning");
+          return;
+      }
+    
+      $.ajax({
+        url: "<?= base_url('admin/users/updateuser') ?>",
+        type: "post",
+        dataType: "json",
+        data: {
+            "person_nm" : person_nm,
             "satuan" : satuan,
             "birth_place" : birth_place,
             "birth_dttm" : birth_dttm,
@@ -292,37 +326,60 @@
             "user_nm" : user_nm,
             "user_group" : user_group,
             "gender_cd" : gender_cd,
-            "person_id" : person_id
-      },
-      success: function(data) {
-        $('#modal-lg').modal("hide");
-        alert("Sukses");
-        $("#example2").load(window.location.href+" #example2");
-      },
-      error: function() {
-        alert("error");
-      }
-    });
-}
+            "person_id" : person_id,
+            "email" : email
+        },
+        success: function(data) {
+          $('#modal-lg').modal("hide");
+          Swal.fire({
+              icon: 'success',
+              title: 'Berhasil',
+              text: 'Data user berhasil diperbarui!'
+          }).then(() => {
+              location.reload();
+          });
+        },
+        error: function() {
+          Swal.fire("Error", "Gagal memperbarui data user", "error");
+        }
+      });
+  }
 
-function hapusperson(person_id) {
-    $.ajax({
-      url: "<?= base_url('admin/users/hapususer') ?>",
-      type: "post",
-      dataType: "json",
-      data: {
-        "person_id": person_id
-      },
-      success: function(data) {
-        $('#modal-lg').modal("hide");
-        alert("Sukses");
-        $("#example2").load(window.location.href+" #example2");
-      },
-      error: function() {
-        alert("error");
-      }
-    });
-}
+  function hapusperson(person_id) {
+      Swal.fire({
+          title: 'Apakah Anda yakin?',
+          text: "Seluruh data user ini akan dinonaktifkan!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Ya, hapus!',
+          cancelButtonText: 'Batal'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              $.ajax({
+                url: "<?= base_url('admin/users/hapususer') ?>",
+                type: "post",
+                dataType: "json",
+                data: {
+                  "person_id": person_id
+                },
+                success: function(data) {
+                  Swal.fire(
+                    'Berhasil!',
+                    'User telah dihapus.',
+                    'success'
+                  ).then(() => {
+                      location.reload();
+                  });
+                },
+                error: function() {
+                  Swal.fire("Error", "Gagal menghapus user", "error");
+                }
+              });
+          }
+      });
+  }
 </script>
 </body>
 </html>

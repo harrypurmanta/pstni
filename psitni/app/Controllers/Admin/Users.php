@@ -70,6 +70,7 @@ class Users extends BaseController
         $user_nm = $this->request->getPost("user_nm");
         $gender_cd = $this->request->getPost("gender_cd");
         $user_group = $this->request->getPost("user_group");
+        $email = $this->request->getPost("email");
         $data = [
             "person_nm" => $person_nm,
             "satuan" => $satuan,
@@ -78,6 +79,7 @@ class Users extends BaseController
             "cellphone" => $cellphone,
             "addr_txt" => $addr_txt,
             "gender_cd" => $gender_cd,
+            "email" => $email,
             'status_cd' => 'normal'
         ];
         $person_id = $this->usersmodel->simpanperson($data);
@@ -96,10 +98,13 @@ class Users extends BaseController
     public function edituser() {
         $person_id = $this->request->getPost("person_id");
         $res = $this->usersmodel->getbyId($person_id)->getResult();
-        $dates = date("Y-m-d", strtotime($res[0]->birth_dttm));
-        $data = ['res' => $res, 'dates' => $dates];
-        $html = view('admin/users_edit', $data);
-        return $this->response->setJSON($html);
+        $dates = '';
+        if (!empty($res)) {
+            $birth_dttm = $res[0]->birth_dttm ?? '';
+            $dates = (!empty($birth_dttm) && $birth_dttm !== '0000-00-00 00:00:00') ? date("Y-m-d", strtotime($birth_dttm)) : '';
+        }
+        $data = ['res' => $res, 'dates' => $dates, 'person_id' => $person_id];
+        return view('admin/users_edit', $data);
     }
 
     public function updateuser() {
@@ -113,6 +118,7 @@ class Users extends BaseController
         $user_nm = $this->request->getPost("user_nm");
         $gender_cd = $this->request->getPost("gender_cd");
         $user_group = $this->request->getPost("user_group");
+        $email = $this->request->getPost("email");
         $data = [
             "person_nm" => $person_nm,
             "satuan" => $satuan,
@@ -121,6 +127,7 @@ class Users extends BaseController
             "cellphone" => $cellphone,
             "addr_txt" => $addr_txt,
             "gender_cd" => $gender_cd,
+            "email" => $email,
             'status_cd' => 'normal'
         ];
         $person_id = $this->usersmodel->updateperson($person_id,$data);

@@ -242,7 +242,6 @@ $request = \Config\Services::request();
                 <section class="content">
                     <div class="row">
                         <div class="col-md-12 d-flex">
-
                             <!-- Tahapan Ujian -->
                             <div class="bg-gray col-md-8" style="border-radius:5px;">
                                 
@@ -281,7 +280,7 @@ $request = \Config\Services::request();
 
                     <div class="row" style="margin-top:10px;">
                         <div class="col-md-12">
-                            <div class="bg-gray col-md-7" style="border-radius:5px;">
+                            <div class="bg-gray col-md-8" style="border-radius:5px;">
                                 <div style="margin-top:10px;">
                                     <?php
                                         $db = \Config\Database::connect();
@@ -336,7 +335,7 @@ $request = \Config\Services::request();
                                     </div>
                                 </div>
                             </div>
-                            <div class="bg-gray col-md-4" style="border-radius:5px;margin-left:10px;">
+                            <div class="bg-gray col-md-3" style="border-radius:5px;margin-left: 10px;">
                                 <div class="row">
                                     <div id="dv_boxnosoal" class="col-md-12 text-center"
                                         style="margin-top:10px;margin-bottom:10px;display: flex;flex-wrap: wrap;justify-content: center;">
@@ -503,15 +502,15 @@ $request = \Config\Services::request();
                                 let pilihan_nm_txt = "";
                                 if (boxsoal.has_respon) {
                                     pilihan_nm_txt = " " + boxsoal.pilihan_nm;
-                                    style = `border:2px solid #3cce3c;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
+                                    style = `border: 1.5px solid #3cce3c;width:15%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
                                     if (boxsoal.no_soal == data.no_soal) {
-                                        style = `border:2px solid blue;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
+                                        style = `border:1.5px solid blue;width:15%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
                                     }
                                 } else {
                                     pilihan_nm_txt = "";
-                                    style = `border:2px solid red;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
+                                    style = `border:1.5px solid red;width:15%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
                                     if (boxsoal.no_soal == data.no_soal) {
-                                        style = `border:2px solid blue;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
+                                        style = `border:1.5px solid blue;width:15%;height:36px;padding:5px;margin:5px;border-radius:5px;${boxcursor}`;
                                     }
                                 }
                                 boxHtml += `<div class='col-md-2' style='${style} font-size:12px;' onclick='setboxsoal(${boxsoal.no_soal})'>${boxsoal.no_soal}${pilihan_nm_txt}</div>`;

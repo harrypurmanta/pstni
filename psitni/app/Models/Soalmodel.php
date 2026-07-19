@@ -285,7 +285,7 @@ public function getAllSoalSK() {
                         ->where('group_id',2)
                         ->where('materi',$materi)
                         ->where('created_user_id',$user_id)
-                        ->where('status_cd','normal')
+                        ->whereIn('status_cd',['normal','finish'])
                         ->get();
     }
 
@@ -296,7 +296,7 @@ public function getAllSoalSK() {
                         ->where('group_id',3)
                         ->where('materi',$materi)
                         ->where('created_user_id',$user_id)
-                        ->where('status_cd','normal')
+                        ->whereIn('status_cd',['normal','finish'])
                         ->get();
     }
 
@@ -307,7 +307,6 @@ public function getAllSoalSK() {
                         ->where('group_id',$group_id)
                         ->where('materi',$materi)
                         ->where('created_user_id',$user_id)
-                        ->where('status_cd','normal')
                         ->where('status_cd','normal')
                         ->get();
     }
@@ -330,7 +329,7 @@ public function getAllSoalSK() {
                         ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
                         ->join('soal c','c.soal_id=b.soal_id','left')
                         ->where('b.status_cd','normal')
-                        ->where('a.status_cd','normal')
+                        ->whereIn('a.status_cd',['normal','finish'])
                         ->where('a.created_user_id',$user_id)
                         // ->where('a.session',$session)
                         ->where('a.materi',5)
@@ -345,7 +344,7 @@ public function getAllSoalSK() {
                         ->where('created_user_id',$user_id)
                         ->where('materi',5)
                         ->where('group_id',4)
-                        ->where('status_cd','normal')
+                        ->whereIn('status_cd',['normal','finish'])
                         ->get();
     }
 
@@ -355,7 +354,7 @@ public function getAllSoalSK() {
                         ->select('*,a.pilihan_nm as pilihan_respon')
                         ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
                         ->join('soal c','c.soal_id=b.soal_id','left')
-                        ->where('a.status_cd','normal')
+                        ->whereIn('a.status_cd',['normal','finish'])
                         ->where('b.status_cd','normal')
                         ->where('a.created_user_id',$user_id)
                         ->where('a.used',$used)
@@ -369,7 +368,7 @@ public function getAllSoalSK() {
                         ->select('*,a.pilihan_nm as pilihan_respon')
                         ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
                         ->join('soal c','c.soal_id=b.soal_id','left')
-                        ->where('a.status_cd','normal')
+                        ->whereIn('a.status_cd',['normal','finish'])
                         ->where('b.status_cd','normal')
                         ->where('a.created_user_id',$user_id)
                         ->where('a.session',$session)
@@ -386,7 +385,7 @@ public function getAllSoalSK() {
                         ->select('*,a.pilihan_nm as pilihan_respon')
                         ->join('jawaban b', 'b.jawaban_id = a.jawaban_id', 'left')
                         ->join('soal c','c.soal_id=b.soal_id','left')
-                        ->where('a.status_cd','normal')
+                        ->whereIn('a.status_cd',['normal','finish'])
                         ->where('b.status_cd','normal')
                         ->where('a.created_user_id', $user_id)
                         ->where('a.used', $used)
@@ -402,7 +401,7 @@ public function getAllSoalSK() {
                         ->select('*,a.pilihan_nm as pilihan_respon,a.kolom_id as kolom_respon,a.soal_id as soal_id_respon,b.soal_id as soal_id_jwb')
                         ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
                         ->join('soal c','c.soal_id=b.soal_id','left')
-                        ->where('a.status_cd','normal')
+                        ->whereIn('a.status_cd',['normal','finish'])
                         ->where('b.status_cd','normal')
                         ->where('a.created_user_id',$user_id)
                         // ->where('a.session',$session)
@@ -415,7 +414,7 @@ public function getAllSoalSK() {
                         ->select('*,a.pilihan_nm as pilihan_respon,a.kolom_id as kolom_respon,a.soal_id as soal_id_respon,b.soal_id as soal_id_jwb')
                         ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
                         ->join('soal c','c.soal_id=b.soal_id','left')
-                        ->where('a.status_cd','normal')
+                        ->whereIn('a.status_cd',['normal','finish'])
                         ->where('b.status_cd','normal')
                         ->where('a.created_user_id',$user_id)
                         ->where('a.session',$session)
@@ -434,7 +433,7 @@ public function getAllSoalSK() {
                         ->where('created_user_id',$user_id)
                         ->where('session',$session)
                         ->where('materi',$materi)
-                        ->where('status_cd','normal')
+                        ->whereIn('status_cd',['normal','finish'])
                         ->get();
     }
 
@@ -820,7 +819,7 @@ public function getAllSoalSK() {
                         ->join('group_soal c','c.group_soal_id=a.group_id')
                         ->where('a.materi',$materi)
                         ->where('a.created_user_id',$user_id)
-                        // ->where('a.status_cd', 'finish')
+                        ->whereIn('a.status_cd', ['normal','finish'])
                         ->whereNotIn('a.group_id', [7,8])
                         ->groupBy('a.group_id')
                         // ->orderBy('c.urutan', 'ASC')
@@ -927,7 +926,7 @@ public function getAllSoalSK() {
             ->where('created_user_id', $user_id)
             ->where('used', $used)
             // ->where('materi', $materi_id)
-            ->where('status_cd', 'finish')
+            ->whereIn('status_cd', ['normal','finish'])
             ->getCompiledSelect();
 
         return $this->db->table('kolom_pauli k')
