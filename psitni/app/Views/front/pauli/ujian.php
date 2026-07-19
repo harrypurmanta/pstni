@@ -1,5 +1,8 @@
 <?php
 $request = \Config\Services::request();
+$db = \Config\Database::connect();
+$materi_row = $db->table('materi')->where('materi_id', $materi_id)->get()->getRow();
+$materi_nm = $materi_row ? $materi_row->materi_nm : '';
 ?>
 <!DOCTYPE html>
 <html>
@@ -136,19 +139,18 @@ $request = \Config\Services::request();
             <div class="container">
                 <section class="content">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-4">
                             <div class="bg-gray col-md-12 text-center"
                                 style="border-radius:5px;height:85px;">
                                 <span style="margin-top:15px;">Waktu</span><br>
                                 <label style="font-size:30px;" id="countdown">00:00</label>
                             </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col-md-12" style="display:flex;">
+                        
+                        <div class="col-md-8" style="display:flex;">
                             <div class="bg-gray col-md-12" style="border-radius: 5px; margin: 0 auto; min-width: 100%;">
                                 <div style="margin-top: 10px; text-align: center;">
-                                    <label style="font-size:20px;margin-top:15px;" for="kolom" id="lb_kolom">Kolom</label>
+                                    <label style="font-size:20px;" for="kolom" id="lb_kolom"><?= $materi_nm ?> - Kolom</label>
                                 </div>
                                 <div id="dv_soal" class="col-md-12" style="min-height:500px; border-radius:5px;">
                                     
@@ -159,8 +161,10 @@ $request = \Config\Services::request();
                                     </div>
                                 </div>
                             </div>
-
                         </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        
                     </div>
                 </section>
             </div>
@@ -177,6 +181,7 @@ $request = \Config\Services::request();
     <script src="<?= base_url() ?>/plugins/sweetalert2/sweetalert2.js"></script>
     <script>
     var timers;
+    const materi_nm = "<?= $materi_nm ?>";
     $(document).ready(function() {
         setTimeout(() => {
             startujian("start","","","",<?= $request->uri->getSegment(4) ?>,0,1,<?= $request->uri->getSegment(3) ?>,1);
@@ -202,8 +207,7 @@ $request = \Config\Services::request();
 
     function renderSoal(data) {
         let html = `
-        <div class='col-md-12' style='width:100%;margin-top:30px;'>
-            <label style='font-size:20px;'>Pertanyaan ${data.no_soal}</label>
+        <div class='col-md-12' style='width:100%;'>
             <div class='row col-md-12 text-center'>
         `;
 
@@ -255,7 +259,7 @@ $request = \Config\Services::request();
         html += `</div></div></div>`;
 
         $("#dv_soal").html(html);
-        $("#lb_kolom").text("Kolom " + data.kolom_id);
+        $("#lb_kolom").text(materi_nm + " - Kolom " + data.kolom_id + " - Pertanyaan " + data.no_soal);
     }
 
 

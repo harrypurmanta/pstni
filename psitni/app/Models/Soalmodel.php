@@ -835,7 +835,11 @@ public function getAllSoalSK() {
                     b.pembahasan,
                     b.soal_img,
                     a.pilihan_nm,
+                    d.jawaban_nm,
+                    d.jawaban_img,
                     b.kunci,
+                    e.jawaban_nm as kunci_jawaban_nm,
+                    e.jawaban_img as kunci_jawaban_img,
                     b.no_soal,
                     b.soal_nm,
                     b.materi,
@@ -844,11 +848,13 @@ public function getAllSoalSK() {
                     SUM(CASE WHEN b.kunci != a.pilihan_nm THEN 1 ELSE 0 END) as total_salah")
             ->join('soal b','b.soal_id=a.soal_id')
             ->join('group_soal c','c.group_soal_id=a.group_id')
+            ->join('jawaban d', 'd.soal_id = b.soal_id AND d.pilihan_nm = a.pilihan_nm', 'left')
+            ->join('jawaban e', 'e.soal_id = b.soal_id AND e.pilihan_nm = b.kunci', 'left')
             ->where('a.materi',$materi)
             ->where('a.created_user_id',$user_id)
             // ->where('a.status_cd', 'finish')
             ->whereNotIn('a.group_id',[8])
-            ->groupBy('c.group_soal_id, c.group_nm, b.pembahasan_img, b.soal_img, a.pilihan_nm, b.kunci, b.no_soal, b.pembahasan, b.soal_nm, b.materi')
+            ->groupBy('c.group_soal_id, c.group_nm, b.pembahasan_img, b.soal_img, a.pilihan_nm, d.jawaban_nm, d.jawaban_img, b.kunci, e.jawaban_nm, e.jawaban_img, b.no_soal, b.pembahasan, b.soal_nm, b.materi')
             ->orderBy('c.group_soal_id', 'ASC')
             ->orderBy('b.no_soal', 'ASC')
             ->get();

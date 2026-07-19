@@ -176,14 +176,9 @@ $request = \Config\Services::request();
                     <div class="row">
                         <div class="col-md-12">
                             <div class="bg-gray col-md-12" style="padding-bottom:20px; position:relative;">
-                                <div class="text-right" style="margin-top:10px;">
-                                    <button onclick="kirimemail()" class="btn btn-success">
-                                        Kirim hasil ke email
-                                    </button>
-                                </div>
                                 <h2 class="text-center"><b>Nilai Anda</b></h2>
                                 <div class="col-md-12" style="margin-bottom: 20px;">
-                                    <table class="table table-bordered table-striped" style="width:50%; margin:0 auto;">
+                                    <table class="table table-bordered table-striped" style="width:80%; margin:0 auto;">
                                         <thead>
                                                 <tr>
                                                     <th class="text-center">Paket</th>
@@ -212,7 +207,12 @@ $request = \Config\Services::request();
                                         </tbody>
                                     </table>
                                 </div>
-                                
+                                <div class="text-center" style="margin-top:10px;">
+                                    <button onclick="kirimemail()" class="btn btn-success">
+                                        Kirim hasil ke email
+                                    </button>
+                                </div>
+                                <p class="text-center" style="font-weight: bold;">untuk hasil Rorschach dan Pauli akan dikirimkan melalu email.</p>
                                 <h2 class="text-center" style="display: none;"><b>Pauli</b></h2>
                                 <div class="col-md-12 d-none" style="display: none;">
                                     <div class="box">
@@ -563,10 +563,23 @@ $request = \Config\Services::request();
                     //     $("#loader-wrapper").show();
                     // },
                     success: function(data) {
-                        if (data) {
+                        if (data && (data === true || data.status === "sukses")) {
                             Swal.fire("Berhasil", "Email berhasil dikirim", "success");
                         } else {
-                            Swal.fire("Gagal", "Email gagal dikirim", "error");
+                            let msg = "Email gagal dikirim.";
+                            if (data && data.debug) {
+                                console.log("SMTP Debugger Output:", data.debug);
+                                let cleanDebug = data.debug.replace(/<[^>]*>/g, '').trim();
+                                if (cleanDebug.length > 200) {
+                                    cleanDebug = cleanDebug.substring(0, 200) + "...";
+                                }
+                                msg += "<br><br><small style='color:red;'>" + cleanDebug + "</small>";
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                html: msg
+                            });
                         }
                         $("#loader-wrapper").hide();
                     },

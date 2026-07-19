@@ -45,21 +45,14 @@ class Users extends BaseController
     }
 
     public function resetrespon() {
+        $request = \Config\Services::request();
         $materi_id = $this->request->getPost("materi_id");
         $group_id = $this->request->getPost("group_id");
         $user_id = $this->request->getPost("user_id");
-        
-        if ($group_id == "semua") {
-            $data = [
+        $data = [
                 "status_cd" => "nullified"
             ];
             $reset = $this->soalmodel->resetsemua($materi_id, $data, $user_id);
-        } else {
-            $data = [
-                "status_cd" => "nullified"
-            ];
-            $reset = $this->soalmodel->resetbygroup($materi_id,$group_id,$data,$user_id);
-        }
         echo json_encode($reset);
     }
 
@@ -645,7 +638,7 @@ class Users extends BaseController
             if (count($responlatihan)>0) {
                 foreach ($responlatihan as $lat) {
                     $used = $lat->used;
-                    $skused .= "<div style='display:inline-block;border:1px solid black;margin:10px;width: 90px;text-align: center;border-radius:10px;background-color: deepskyblue;cursor:pointer;.'><a target='_blank' href='".base_url()."/admin/users/hasilused/$user_id/$materi/$used' id='dv_used_${used}' style='width: 100%;height:100%;cursor:pointer;color:#000000;'><label for='dv_used_${used}' style='font-size:50px;cursor:pointer;'>".$lat->used."</label><label style='cursor:pointer;' for='dv_used_${used}' style='font-size:14px;'>".$lat->used_dttm."</label></a></div>";
+                    $skused .= "<div style='display:inline-block;border:1px solid black;margin:10px;width: 90px;text-align: center;border-radius:10px;background-color: deepskyblue;cursor:pointer;.'><a target='_blank' href='".base_url()."/admin/users/hasilused/$user_id/$materi/$used' id='dv_used_{$used}' style='width: 100%;height:100%;cursor:pointer;color:#000000;'><label for='dv_used_{$used}' style='font-size:50px;cursor:pointer;'>".$lat->used."</label><label style='cursor:pointer;' for='dv_used_{$used}' style='font-size:14px;'>".$lat->used_dttm."</label></a></div>";
                 }
             } else {
                 $skused = "";

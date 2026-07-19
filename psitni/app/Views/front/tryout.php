@@ -283,7 +283,12 @@ $request = \Config\Services::request();
                         <div class="col-md-12">
                             <div class="bg-gray col-md-7" style="border-radius:5px;">
                                 <div style="margin-top:10px;">
-                                    <label for="pertanyaan">Pertanyaan</label>
+                                    <?php
+                                        $db = \Config\Database::connect();
+                                        $materi_row = $db->table('materi')->where('materi_id', $soal[0]->materi)->get()->getRow();
+                                        $materi_nm = $materi_row ? $materi_row->materi_nm : '';
+                                    ?>
+                                    <label for="pertanyaan">Pertanyaan <?= $materi_nm ?></label>
                                 </div>
                                 <div class="col-md-12"
                                     style="min-height:100px;background-color:#aeaebb;border-radius:5px;padding-bottom:25px;margin-bottom:20px;">
@@ -529,7 +534,7 @@ $request = \Config\Services::request();
                          if (data.soal && data.soal.soal_img) {
                              imgSoalHtml = `
                                  <a href='${data.base_url}/images/soal/materi/${data.soal.materi}/group/${group_id}/besar/${data.soal.soal_img}' data-toggle='lightbox'>
-                                     <img style='max-width: 350px;max-height: 100%; margin-top: 10px;' src='${data.base_url}/images/soal/materi/${data.soal.materi}/group/${group_id}/${data.soal.soal_img}' class='img-fluid'>
+                                     <img style='max-width: 350px;max-height: 200px; margin-top: 10px;' src='${data.base_url}/images/soal/materi/${data.soal.materi}/group/${group_id}/${data.soal.soal_img}' class='img-fluid'>
                                  </a>`;
                          }
                         $("#dv_img_soal").html(imgSoalHtml);

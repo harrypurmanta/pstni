@@ -35,7 +35,7 @@
                                 $db = db_connect();
                                 foreach ($materi as $key) {
 
-                                    $query = $db->query("SELECT * FROM respon WHERE materi = $key->materi_id AND created_user_id = $user_id ")->getResultArray();
+                                    $query = $db->query("SELECT * FROM respon WHERE materi = $key->materi_id AND created_user_id = $user_id AND status_cd != 'nullified'")->getResultArray();
                                     if (count($query)>0) {
                                         // }
                                         $click = base_url()."/tryout/hasiltryout/".$key->materi_id."/8";

@@ -66,16 +66,16 @@ class Email extends BaseConfig
     /**
      * SMTP Port
      *
-     * @var int
+     * @var string
      */
-    public $SMTPPort = 465;
+    public $SMTPPort = '465';
 
     /**
      * SMTP Timeout (in seconds)
      *
      * @var int
      */
-    public $SMTPTimeout = 5;
+    public $SMTPTimeout = 30;
 
     /**
      * Enable persistent SMTP connections

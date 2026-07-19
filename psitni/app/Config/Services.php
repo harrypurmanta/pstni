@@ -29,4 +29,22 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
+
+    /**
+     * The Renderer class is the class that actually displays a file to the user.
+     * Overridden to use CustomView which supports session and dynamic properties.
+     *
+     * @return \App\Libraries\CustomView
+     */
+    public static function renderer(?string $viewPath = null, $config = null, bool $getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('renderer', $viewPath, $config);
+        }
+
+        $viewPath = $viewPath ?: config('Paths')->viewDirectory;
+        $config ??= config('View');
+
+        return new \App\Libraries\CustomView($config, $viewPath, static::locator(), CI_DEBUG, static::logger());
+    }
 }

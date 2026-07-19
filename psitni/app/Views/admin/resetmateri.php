@@ -251,7 +251,7 @@
     });
   });
 
-  function resetrespon(materi_id,group_id) {
+  function resetrespon(materi_id, group_id) {
     let text = "Apakah anda yakin mereset data ini ?";
     var user_id = <?= $user_id ?>;
     if (confirm(text) == true) {

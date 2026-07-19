@@ -38,6 +38,13 @@ abstract class BaseController extends Controller
     protected $helpers = [];
 
     /**
+     * The Session service instance.
+     *
+     * @var \CodeIgniter\Session\Session
+     */
+    protected $session;
+
+    /**
      * Constructor.
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)

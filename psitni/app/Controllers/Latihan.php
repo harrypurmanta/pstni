@@ -217,7 +217,10 @@ class Latihan extends BaseController
                     }
                     
                     $res = $this->latihanmodel->getSoal($no_soal,$jenis_id,$materi,$group_id)->getResult();
-                    
+                    if (count($res) == 0 && $proc == "next") {
+                        echo json_encode(array("proc" => "selesai"));
+                        return;
+                    }
                     if (count($res)>0) {
                         $soal_nm = $res[0]->soal_nm;
                         $soal_id = $res[0]->soal_id;

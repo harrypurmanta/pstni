@@ -102,12 +102,12 @@ class Soal extends BaseController
                     $ret .= "</td>
                             <td style='text-align:center;'><button onclick='editsoal(".$key->soal_id.")' style='font-size:16px;' class='btn btn-secondary' data-toggle='modal' data-target='#modal-lg'>Edit</button> <button onclick='hapussoal(".$key->soal_id.")' style='font-size:16px;' class='btn btn-danger'>Hapus</button> <div class='form-group'>
                             <div class='custom-control custom-switch'>
-                              <input onclick='checkboxenable(\"$jawaban_nm\",$kolom_id,$soal_id)' type='checkbox' class='custom-control-input' id='customSwitch1_${kolom_id}_${soal_id}' ".($status_jwb=='normal'?'checked':'')."/>
-                              <label class='custom-control-label' for='customSwitch1_${kolom_id}_${soal_id}'>enable/disable</label>
+                              <input onclick='checkboxenable(\"$jawaban_nm\",$kolom_id,$soal_id)' type='checkbox' class='custom-control-input' id='customSwitch1_{$kolom_id}_{$soal_id}' ".($status_jwb=='normal'?'checked':'')."/>
+                              <label class='custom-control-label' for='customSwitch1_{$kolom_id}_{$soal_id}'>enable/disable</label>
                             </div>
                           </div></td>
                             </tr>
-                                <tr class='tr_parentdata' style='background-color:#ececec54;' id='tr_data_${soal_id}'>
+                                <tr class='tr_parentdata' style='background-color:#ececec54;' id='tr_data_{$soal_id}'>
                                 </tr>";
                         }
                     

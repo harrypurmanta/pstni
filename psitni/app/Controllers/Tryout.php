@@ -126,6 +126,9 @@ class Tryout extends BaseController
                     }
                     
                     $res = $this->soalmodel->getSoal($no_soal,$group_id,$materi,$kolom_id)->getResult();
+                    if (count($res) == 0 && $proc == "next") {
+                        return $this->response->setJSON(array("proc" => "selesai"));
+                    }
                     if (count($res)>0) {
                         $soal_nm = $res[0]->soal_nm;
                         $soal_id = $res[0]->soal_id;
@@ -414,25 +417,6 @@ class Tryout extends BaseController
             ]);
         }
 
-        // $tabelHasil = '
-        //     <h3 style="text-align:center;">Rekap Nilai per Paket</h3>
-        //     <table border="1" cellpadding="5" cellspacing="0" width="100%">
-        //         <tr>
-        //             <th width="40%" align="center"><b>Paket</b></th>
-        //             <th width="30%" align="center"><b>Benar</b></th>
-        //             <th width="30%" align="center"><b>Salah</b></th>
-        //         </tr>';
-
-        // foreach ($getResponHasilSalah as $key) {
-        //     $tabelHasil .= '
-        //     <tr>
-        //         <td align="center">'.$key->group_nm.'</td>
-        //         <td align="center">'.$key->total_benar.'</td>
-        //         <td align="center">'.$key->total_salah.'</td>
-        //     </tr>';
-        // }
-
-        // $tabelHasil .= '</table>';
         $pdf2 = new TCPDF();
         $pdf2->AddPage();
         $pdf2->setPrintHeader(false);
@@ -446,7 +430,9 @@ class Tryout extends BaseController
             foreach ($getResponHasilSalah as $key) {
                 $soal_nm = $key->soal_nm == '' ? '-' : $key->soal_nm ?? '-';
                 $pilihan_nm = $key->pilihan_nm ?? '-';
+                $jawaban_nm = $key->jawaban_nm ?? '-';
                 $kunci = $key->kunci ?? '-';
+                $kunci_jawaban_nm = $key->kunci_jawaban_nm ?? '-';
                 $pembahasan = $key->pembahasan == '' ? '-' : $key->pembahasan ?? '-';
                 $no_soal = $key->no_soal ?? '-';
 
@@ -465,10 +451,10 @@ class Tryout extends BaseController
                 // Gambar pembahasan
                 $pembahasan_img = "";
                 if (!empty($key->pembahasan_img)) {
-                    $path = $basePath . 'images/pembahasan/' . $key->materi . '/' . $key->pembahasan_img;
+                    $path = $basePath . 'images/pembahasan/' . $key->materi . '/group/' . $key->group_soal_id . '/' . $key->pembahasan_img;
 
                     if (file_exists($path)) {
-                        $pembahasan_img = '<img src="'.$path.'" width="150">';
+                        $pembahasan_img = '<img src="'.$path.'" width="150" height="100">';
                     } else {
                         $pembahasan_img = '';
                     }
@@ -477,12 +463,35 @@ class Tryout extends BaseController
                 // Gambar soal
                 $img_soal = "";
                 if (!empty($key->soal_img)) {
-                    $path = $basePath . 'images/soal/materi/' . $key->materi . '/' . $key->soal_img;
+                    $path = $basePath . 'images/soal/materi/' . $key->materi . '/group/' . $key->group_soal_id . '/' . $key->soal_img;
 
                     if (file_exists($path)) {
-                        $img_soal = '<img src="'.$path.'" width="250">';
+                        $img_soal = '<img src="'.$path.'" width="150" height="100">';
                     } else {
                         $img_soal = '';
+                    }
+                }
+                // Gambar jawaban user
+                $img_jawaban = "";
+                if (!empty($key->jawaban_img)) {
+                    $path = $basePath . 'images/jawaban/materi/' . $key->materi . '/group/' . $key->group_soal_id . '/' . $key->jawaban_img;
+                    if (!file_exists($path) && strpos($key->jawaban_img, '.') === false) {
+                        $path .= '.jpg';
+                    }
+                    if (file_exists($path)) {
+                        $img_jawaban = '<img src="'.$path.'" width="150" height="100">';
+                    }
+                }
+
+                // Gambar kunci jawaban
+                $img_kunci = "";
+                if (!empty($key->kunci_jawaban_img)) {
+                    $path = $basePath . 'images/jawaban/materi/' . $key->materi . '/group/' . $key->group_soal_id . '/' . $key->kunci_jawaban_img;
+                    if (!file_exists($path) && strpos($key->kunci_jawaban_img, '.') === false) {
+                        $path .= '.jpg';
+                    }
+                    if (file_exists($path)) {
+                        $img_kunci = '<img src="'.$path.'" width="150" height="100">';
                     }
                 }
 
@@ -495,22 +504,22 @@ class Tryout extends BaseController
                             <tr>
                                 <td width="20%">Pertanyaan</td>
                                 <td width="3%">:</td>
-                                <td width="77%">'.strip_tags($soal_nm).' '.$img_soal.'</td>
+                                <td width="77%">'.strip_tags($soal_nm).(!empty($img_soal) ? '<br>'.$img_soal : '').'</td>
                             </tr>
                             <tr>
                                 <td>Jawaban</td>
                                 <td>:</td>
-                                <td>'.$pilihan_nm.'</td>
+                                <td>'.$pilihan_nm.'. '.strip_tags($jawaban_nm).(!empty($img_jawaban) ? '<br>'.$img_jawaban : '').'</td>
                             </tr>
                             <tr>
                                 <td>Kunci</td>
                                 <td>:</td>
-                                <td>'.$kunci.'</td>
+                                <td>'.$kunci.'. '.strip_tags($kunci_jawaban_nm).(!empty($img_kunci) ? '<br>'.$img_kunci : '').'</td>
                             </tr>
                             <tr>
                                 <td>Pembahasan</td>
                                 <td>:</td>
-                                <td>'.strip_tags($pembahasan).' '.$pembahasan_img.'</td>
+                                <td>'.strip_tags($pembahasan).(!empty($pembahasan_img) ? '<br>'.$pembahasan_img : '').'</td>
                             </tr>
                         </table>
                     </div>';
@@ -635,7 +644,13 @@ class Tryout extends BaseController
             $mailService->setSubject('Hasil Tes BTP  Psi TNI');
             $mailService->setMessage('Terima kasih telah mengikuti tryout Bintang Timur Prestasi. berikut kami kirimkan hasil anda');
             $sendit = $mailService->send();
-            echo json_encode($sendit);
+            if (!$sendit) {
+                $debug_msg = $mailService->printDebugger(['headers', 'subject', 'body']);
+                log_message('error', 'SMTP Debug: ' . $debug_msg);
+                echo json_encode(['status' => 'gagal', 'debug' => $debug_msg]);
+            } else {
+                echo json_encode(['status' => 'sukses']);
+            }
 
     }
 

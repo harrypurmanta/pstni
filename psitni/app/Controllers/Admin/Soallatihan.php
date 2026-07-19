@@ -293,6 +293,7 @@ class Soallatihan extends BaseController
                 'pembahasan' => $pembahasan_nm,
                 'status_cd' => 'normal'
             ];
+        }
       
         $soal_id = $this->latihanmodel->simpansoallatihan($data);
         if ($soal_id) {
