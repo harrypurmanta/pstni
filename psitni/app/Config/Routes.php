@@ -84,6 +84,10 @@ $routes->get('admin/users/hasilexcel/(:num)/(:num)', '\App\Controllers\Admin\Use
 $routes->post('admin/users/hasilexcel/(:num)/(:num)', '\App\Controllers\Admin\Users::hasilexcel/$1/$2');
 $routes->get('admin/users/hasilpdf/(:num)/(:num)', '\App\Controllers\Admin\Users::hasilpdf/$1/$2');
 $routes->post('admin/users/hasilpdf/(:num)/(:num)', '\App\Controllers\Admin\Users::hasilpdf/$1/$2');
+$routes->get('admin/users/hasilpdf_salah/(:num)/(:num)', '\App\Controllers\Admin\Users::hasilpdf_salah/$1/$2');
+$routes->post('admin/users/hasilpdf_salah/(:num)/(:num)', '\App\Controllers\Admin\Users::hasilpdf_salah/$1/$2');
+$routes->get('admin/users/hasilpdf_pauli/(:num)/(:num)', '\App\Controllers\Admin\Users::hasilpdf_pauli/$1/$2');
+$routes->post('admin/users/hasilpdf_pauli/(:num)/(:num)', '\App\Controllers\Admin\Users::hasilpdf_pauli/$1/$2');
 $routes->get('admin/users/hasilweb/(:num)/(:num)', '\App\Controllers\Admin\Users::hasilweb/$1/$2');
 $routes->post('admin/users/hasilweb/(:num)/(:num)', '\App\Controllers\Admin\Users::hasilweb/$1/$2');
 $routes->get('admin/users/hasillatihan/(:num)/(:num)', '\App\Controllers\Admin\Users::hasillatihan/$1/$2');

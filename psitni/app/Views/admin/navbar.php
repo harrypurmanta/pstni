@@ -17,7 +17,7 @@
           <li class="nav-item">
             <a href="<?= base_url() ?>/admin/soal" class="nav-link" style="color:#ffffff;">Soal</a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a href="<?= base_url() ?>/admin/soalsikapkerjamateri" class="nav-link" style="color:#ffffff;">SK Materi</a>
           </li>
           <li class="nav-item">
@@ -25,7 +25,7 @@
           </li>
           <li class="nav-item">
             <a href="<?= base_url() ?>/admin/soalsikapkerjalatihan" class="nav-link" style="color:#ffffff;">SK latihan</a>
-          </li>
+          </li> -->
           <!-- <li class="nav-item">
             <a href="<?= base_url() ?>/admin/jawabanlatihan" class="nav-link" style="color:#ffffff;">Jawaban latihan</a>
           </li> -->

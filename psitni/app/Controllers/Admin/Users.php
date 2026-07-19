@@ -373,11 +373,71 @@ class Users extends BaseController
                 $styletotalskor = "color:red;";
                 $syarat = "(Tidak Memenuhi Syarat - TMS)";
             }
-            $ret = "<div style=\"width:100%;text-align:center;color:#000000;\">
-                            <h1>".$resuser[0]->person_nm."</h1>
-                            <h1>Materi ".$materi."</h1>
-                            <h1>".$total_skor."</h1>
-                        </div>";
+
+            $birth_place = esc($resuser[0]->birth_place ?? '');
+            $birth_dttm = !empty($resuser[0]->birth_dttm) ? date("d-m-Y", strtotime($resuser[0]->birth_dttm)) : '';
+            $ttl = $birth_place . ($birth_dttm ? ", " . $birth_dttm : "");
+            $gender = (($resuser[0]->gender_cd ?? '') == 'l') ? 'Laki-laki' : ((($resuser[0]->gender_cd ?? '') == 'm') ? 'Perempuan' : esc($resuser[0]->gender_cd ?? ''));
+            $email = esc($resuser[0]->email ?? '');
+            $cellphone = esc($resuser[0]->cellphone ?? '');
+            $user_nm = esc($resuser[0]->user_nm ?? '');
+            $satuan = esc($resuser[0]->satuan ?? '');
+
+            $ret = "
+            <div style=\"color:#000000; font-family: helvetica;\">
+                <div style=\"text-align:center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 15px;\">
+                    <h2 style=\"margin: 0; font-size: 16px;\">LAPORAN HASIL TRYOUT</h2>
+                    <h3 style=\"margin: 5px 0 0 0; font-size: 12px; color: #555;\">Materi: " . esc($materi) . "</h3>
+                </div>
+                
+                <table cellpadding=\"4\" style=\"margin-bottom: 15px; font-size: 10px; width: 100%;\">
+                    <tr>
+                        <td width=\"120\"><b>Nama Peserta</b></td>
+                        <td width=\"15\">:</td>
+                        <td width=\"365\">" . esc($resuser[0]->person_nm ?? '') . "</td>
+                    </tr>
+                    <tr>
+                        <td><b>TTL</b></td>
+                        <td>:</td>
+                        <td>" . $ttl . "</td>
+                    </tr>
+                    <tr>
+                        <td><b>Jenis Kelamin</b></td>
+                        <td>:</td>
+                        <td>" . $gender . "</td>
+                    </tr>
+                    <tr>
+                        <td><b>Email</b></td>
+                        <td>:</td>
+                        <td>" . $email . "</td>
+                    </tr>
+                    <tr>
+                        <td><b>No. HP</b></td>
+                        <td>:</td>
+                        <td>" . $cellphone . "</td>
+                    </tr>
+                    <tr>
+                        <td><b>Username</b></td>
+                        <td>:</td>
+                        <td>" . $user_nm . "</td>
+                    </tr>
+                    <tr>
+                        <td><b>Satuan</b></td>
+                        <td>:</td>
+                        <td>" . $satuan . "</td>
+                    </tr>
+                </table>
+                
+                <hr style=\"border: none; border-top: 1px solid #ddd; margin-top: 10px; margin-bottom: 10px;\">
+                
+                <table cellpadding=\"4\" style=\"font-size: 11px; margin-bottom: 15px; width: 100%;\">
+                    <tr>
+                        <td width=\"120\"><b>TOTAL SKOR</b></td>
+                        <td width=\"15\">:</td>
+                        <td width=\"365\"><b style=\"" . $styletotalskor . "\">" . $total_skor . " " . $syarat . "</b></td>
+                    </tr>
+                </table>
+            </div>";
             $ret .= "<div>
                         <div>
                         <table border=\"1\" style=\"table-layout:fixed;color:#000000;\">
@@ -732,5 +792,261 @@ class Users extends BaseController
     }
 
 
-    
+    public function hasilpdf_salah() {
+        $user_id = $this->request->getUri()->getSegment(4);
+        $materi = $this->request->getUri()->getSegment(5);
+
+        $mhs = $this->usersmodel->getbyUserId($user_id)->getResult();
+        if (empty($mhs)) {
+            echo "Data user tidak ditemukan";
+            exit;
+        }
+
+        $getResponHasilSalah = $this->soalmodel->getResponHasilSalah("", $materi, $user_id)->getResult();
+
+        $pdf2 = new \TCPDF();
+        $pdf2->AddPage();
+        $pdf2->setPrintHeader(false);
+        $pdf2->setPrintFooter(false);
+
+        $soalsalah = "";
+        $currentGroup = "";
+
+        if (count($getResponHasilSalah) > 0) {
+            foreach ($getResponHasilSalah as $key) {
+                $soal_nm = $key->soal_nm == '' ? '-' : $key->soal_nm ?? '-';
+                $pilihan_nm = $key->pilihan_nm ?? '-';
+                $jawaban_nm = $key->jawaban_nm ?? '-';
+                $kunci = $key->kunci ?? '-';
+                $kunci_jawaban_nm = $key->kunci_jawaban_nm ?? '-';
+                $pembahasan = $key->pembahasan == '' ? '-' : $key->pembahasan ?? '-';
+                $no_soal = $key->no_soal ?? '-';
+
+                if ($currentGroup != $key->group_nm) {
+                    $currentGroup = $key->group_nm;
+                    $soalsalah .= '
+                        <h3 style="background-color:#eee; padding:5px;">
+                            '.$currentGroup.'
+                        </h3>
+                    ';
+                }
+
+                $basePath = str_replace('\\', '/', FCPATH);
+
+                // Gambar pembahasan
+                $pembahasan_img = "";
+                if (!empty($key->pembahasan_img)) {
+                    $path = $basePath . 'images/pembahasan/' . $key->materi . '/group/' . $key->group_soal_id . '/' . $key->pembahasan_img;
+                    if (file_exists($path)) {
+                        $pembahasan_img = '<img src="'.$path.'" width="150" height="100">';
+                    }
+                }
+
+                // Gambar soal
+                $img_soal = "";
+                if (!empty($key->soal_img)) {
+                    $path = $basePath . 'images/soal/materi/' . $key->materi . '/group/' . $key->group_soal_id . '/' . $key->soal_img;
+                    if (file_exists($path)) {
+                        $img_soal = '<img src="'.$path.'" width="150" height="100">';
+                    }
+                }
+                // Gambar jawaban user
+                $img_jawaban = "";
+                if (!empty($key->jawaban_img)) {
+                    $path = $basePath . 'images/jawaban/materi/' . $key->materi . '/group/' . $key->group_soal_id . '/' . $key->jawaban_img;
+                    if (!file_exists($path) && strpos($key->jawaban_img, '.') === false) {
+                        $path .= '.jpg';
+                    }
+                    if (file_exists($path)) {
+                        $img_jawaban = '<img src="'.$path.'" width="150" height="100">';
+                    }
+                }
+
+                // Gambar kunci jawaban
+                $img_kunci = "";
+                if (!empty($key->kunci_jawaban_img)) {
+                    $path = $basePath . 'images/jawaban/materi/' . $key->materi . '/group/' . $key->group_soal_id . '/' . $key->kunci_jawaban_img;
+                    if (!file_exists($path) && strpos($key->kunci_jawaban_img, '.') === false) {
+                        $path .= '.jpg';
+                    }
+                    if (file_exists($path)) {
+                        $img_kunci = '<img src="'.$path.'" width="150" height="100">';
+                    }
+                }
+
+                // Hanya tampilkan yang salah
+                if ($key->pilihan_nm != $kunci) {
+                    $soalsalah .= '
+                    <div style="margin-bottom:15px;">
+                        <b>Soal No. '.$no_soal.'</b><br>
+                        <table border="1" cellpadding="4" cellspacing="0" width="100%" style="font-size:12px;">
+                            <tr>
+                                <td width="20%">Pertanyaan</td>
+                                <td width="3%">:</td>
+                                <td width="77%">'.strip_tags($soal_nm).(!empty($img_soal) ? '<br>'.$img_soal : '').'</td>
+                            </tr>
+                            <tr>
+                                <td>Jawaban</td>
+                                <td>:</td>
+                                <td>'.$pilihan_nm.'. '.strip_tags($jawaban_nm).(!empty($img_jawaban) ? '<br>'.$img_jawaban : '').'</td>
+                            </tr>
+                            <tr>
+                                <td>Kunci</td>
+                                <td>:</td>
+                                <td>'.$kunci.'. '.strip_tags($kunci_jawaban_nm).(!empty($img_kunci) ? '<br>'.$img_kunci : '').'</td>
+                            </tr>
+                            <tr>
+                                <td>Pembahasan</td>
+                                <td>:</td>
+                                <td>'.strip_tags($pembahasan).(!empty($pembahasan_img) ? '<br>'.$pembahasan_img : '').'</td>
+                            </tr>
+                        </table>
+                    </div>';
+                }
+            }
+        }
+
+        if (empty($soalsalah)) {
+            $soalsalah = '<p>Tidak ada soal salah</p>';
+        }
+
+        $pdf2->writeHTML('<hr>', true, false, true, false, '');
+        $pdf2->writeHTML($soalsalah, true, false, true, false, '');
+
+        $filenameSalah = str_replace(" ", "_", $mhs[0]->person_nm)."_materi".$materi."_SALAH.pdf";
+        
+        $this->response->setContentType('application/pdf');
+        $pdf2->Output($filenameSalah, 'I');
+        exit;
+    }
+
+    public function hasilpdf_pauli() {
+        $user_id = $this->request->getUri()->getSegment(4);
+        $materi = $this->request->getUri()->getSegment(5);
+
+        $mhs = $this->usersmodel->getbyUserId($user_id)->getResult();
+        if (empty($mhs)) {
+            echo "Data user tidak ditemukan";
+            exit;
+        }
+
+        $chart1File = WRITEPATH . 'upload/chartpauli/chart_' . $materi . '_' . $mhs[0]->user_nm . '_1.png';
+        $chart2File = WRITEPATH . 'upload/chartpauli/chart_' . $materi . '_' . $mhs[0]->user_nm . '_2.png';
+        $chart3File = WRITEPATH . 'upload/chartpauli/chart_' . $materi . '_' . $mhs[0]->user_nm . '_3.png';
+        $chart4File = WRITEPATH . 'upload/chartpauli/chart_' . $materi . '_' . $mhs[0]->user_nm . '_4.png';
+
+        $hasil = [];
+        for ($i = 1; $i <= 4; $i++) {
+            $hasil[$i] = $this->soalmodel
+                ->getHasilPauliByUserUsed(
+                    $user_id,
+                    $i,
+                    $materi,
+                    1
+                )
+                ->getResult();
+        }
+
+        $pdf3 = new \TCPDF();
+        $pdf3->AddPage();
+        $pdf3->SetFont('helvetica','',8);
+        $pdf3->SetMargins(10, 10, 10);
+        $pdf3->SetAutoPageBreak(TRUE, 10);
+        $pdf3->setPrintHeader(false);
+        $pdf3->setPrintFooter(false);
+
+        $htmlPauli = '<h2 align="center" style="margin-bottom: 10px !important; padding: 0px;">PAULI</h2>
+            <table border="0" width="100%" cellpadding="2">
+            <tr>
+                <td width="50%" valign="top">
+                    <h3 align="center">Lembar 1</h3>
+                    '.$this->buildTablePauli($hasil[1]).'
+                </td>
+                <td width="50%" valign="top">
+                    <h3 align="center">Lembar 2</h3>
+                    '.$this->buildTablePauli($hasil[2]).'
+                </td>
+            </tr>
+            <tr>
+                <td width="50%" valign="top">
+                    <h3 align="center">Lembar 3</h3>
+                    '.$this->buildTablePauli($hasil[3]).'
+                </td>
+                <td width="50%" valign="top">
+                    <h3 align="center">Lembar 4</h3>
+                    '.$this->buildTablePauli($hasil[4]).'
+                </td>
+            </tr>
+            </table>';
+        
+        $pdf3->writeHTML($htmlPauli, true, false, true, false, '');
+
+        if (file_exists($chart1File) || file_exists($chart2File) || file_exists($chart3File) || file_exists($chart4File)) {
+            $pdf3->AddPage();
+            $htmlChart = '
+                <h2 align="center">Grafik Pauli</h2>
+
+                <table border="0" width="100%" cellpadding="5">
+                    <tr>
+                        <td align="center">
+                            <h4>Lembar 1</h4>
+                            '.(file_exists($chart1File) ? '<img src="'.$chart1File.'" height="500">' : '<p>Grafik Lembar 1 tidak ditemukan</p>').'
+                        </td>
+                        <td align="center">
+                            <h4>Lembar 2</h4>
+                            '.(file_exists($chart2File) ? '<img src="'.$chart2File.'" height="500">' : '<p>Grafik Lembar 2 tidak ditemukan</p>').'
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <h4>Lembar 3</h4>
+                            '.(file_exists($chart3File) ? '<img src="'.$chart3File.'" height="500">' : '<p>Grafik Lembar 3 tidak ditemukan</p>').'
+                        </td>
+                        <td align="center">
+                            <h4>Lembar 4</h4>
+                            '.(file_exists($chart4File) ? '<img src="'.$chart4File.'" height="500">' : '<p>Grafik Lembar 4 tidak ditemukan</p>').'
+                        </td>
+                    </tr>
+                </table>
+                ';
+            $pdf3->writeHTML($htmlChart, true, false, true, false, '');
+        }
+
+        $filenamePauli = str_replace(" ", "_", $mhs[0]->person_nm)."_materi".$materi."_PAULI.pdf";
+        $this->response->setContentType('application/pdf');
+        $pdf3->Output($filenamePauli, 'I');
+        exit;
+    }
+
+    private function buildTablePauli($data)
+    {
+        $html = '
+        <table border="1" cellpadding="3" cellspacing="0" width="100%">
+            <tr>
+                <th width="10%" align="center"><b>No</b></th>
+                <th width="30%" align="center"><b>Kolom</b></th>
+                <th width="20%" align="center"><b>Terjawab</b></th>
+                <th width="20%" align="center"><b>Tdk</b></th>
+                <th width="20%" align="center"><b>Salah</b></th>
+            </tr>
+        ';
+
+        $no = 1;
+        foreach ($data as $row) {
+            $tidak_jawab = $row->tidak_terjawab ?? $row->tidak_jawab ?? 0;
+            $html .= '
+            <tr>
+                <td align="center">'.$no++.'</td>
+                <td>'.$row->kolom_nm.'</td>
+                <td align="center">'.$row->terjawab.'</td>
+                <td align="center">'.$tidak_jawab.'</td>
+                <td align="center">'.$row->salah.'</td>
+            </tr>
+            ';
+        }
+
+        $html .= '</table>';
+
+        return $html;
+    }
 }

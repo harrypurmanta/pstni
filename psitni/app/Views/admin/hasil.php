@@ -48,43 +48,78 @@
         <div class="row">
           <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                <table>
-                    
+                <div class="card-header bg-light">
+                  <table class="table table-sm table-borderless m-0 w-100">
                     <?php
                     foreach ($user as $key) {
-                        $dttm = explode(" ",$key->birth_dttm);
-                        echo "<tr><td>Nama</td><td>:</td><td>".$key->person_nm."</td></tr>";
-                        echo "<tr><td>TTL</td><td>:</td><td>".$key->birth_place.",".$dttm[0]."</td></tr>";
+                        $dttm = explode(" ", $key->birth_dttm ?? '');
+                        $formatted_date = !empty($dttm[0]) ? date("d-m-Y", strtotime($dttm[0])) : '';
+                        $gender = (($key->gender_cd ?? '') == 'l') ? 'Laki-laki' : ((($key->gender_cd ?? '') == 'm') ? 'Perempuan' : esc($key->gender_cd ?? ''));
+                    ?>
+                    <tr>
+                      <td class='font-weight-bold' style='width: 15%;'>Nama</td>
+                      <td style='width: 2%;'>:</td>
+                      <td style='width: 33%;'><?= esc($key->person_nm ?? '') ?></td>
+                      
+                      <td class='font-weight-bold' style='width: 15%;'>Email</td>
+                      <td style='width: 2%;'>:</td>
+                      <td style='width: 33%;'><?= esc($key->email ?? '') ?></td>
+                    </tr>
+                    <tr>
+                      <td class='font-weight-bold'>TTL</td>
+                      <td>:</td>
+                      <td><?= esc($key->birth_place ?? '') ?><?= $formatted_date ? ', ' . $formatted_date : '' ?></td>
+                      
+                      <td class='font-weight-bold'>No. HP</td>
+                      <td>:</td>
+                      <td><?= esc($key->cellphone ?? '') ?></td>
+                    </tr>
+                    <tr>
+                      <td class='font-weight-bold'>Jenis Kelamin</td>
+                      <td>:</td>
+                      <td><?= $gender ?></td>
+                      
+                      <td class='font-weight-bold'>Username</td>
+                      <td>:</td>
+                      <td><code class='text-primary'><?= esc($key->user_nm ?? '') ?></code></td>
+                    </tr>
+                    <tr>
+                      <td colspan="3"></td>
+                      <td class='font-weight-bold'>Satuan</td>
+                      <td>:</td>
+                      <td><?= esc($key->satuan ?? '') ?></td>
+                    </tr>
+                    <?php
                     }
                     ?>
-                </table>
+                  </table>
                 </div>
               <div class="card-body">
-              <table id="example2" class="table table-bordered table-hover">
-                  <thead>
+              <table id="example2" class="table table-bordered table-striped table-hover">
+                  <thead class="bg-light">
                   <tr>
                     <th style="text-align:center;">Materi</th>
-                    <th style="text-align:center;">latihan</th>
                   </tr>
                   </thead>
                   <tbody>
                   <tr>
-                    <td style="text-align:center;">
-                   
+                    <td>
+                        <div class="list-group list-group-flush">
                         <?php
                             foreach ($materi as $km) {
-                                echo " <div><a target='_blank' href='".base_url()."/admin/users/hasilexcel/$user_id/".$km->materi_id."'>Excel ".$km->materi_nm."</a> | <a target='_blank' href='".base_url() ."/admin/users/hasilweb/$user_id/".$km->materi_id."'>Web ".$km->materi_nm."</a> | <a target='_blank' href='".base_url() ."/admin/users/hasilpdf/$user_id/".$km->materi_id."'>PDF ".$km->materi_nm."</a></div>";
-
+                                $pdf_links = "<a class='btn btn-xs btn-outline-danger mx-1' target='_blank' href='".base_url()."/admin/users/hasilpdf_salah/$user_id/".$km->materi_id."'><i class='fas fa-file-pdf'></i> PDF Salah</a>";
+                                $pdf_links .= " <a class='btn btn-xs btn-outline-dark mx-1' target='_blank' href='".base_url()."/admin/users/hasilpdf_pauli/$user_id/".$km->materi_id."'><i class='fas fa-file-pdf'></i> PDF Pauli</a>";
+                                
+                                echo " <div class='list-group-item d-flex align-items-center justify-content-between py-2'>
+                                    <span class='font-weight-bold'><i class='fas fa-book mr-1 text-secondary'></i> ".$km->materi_nm."</span>
+                                    <div>
+                                        ".$pdf_links."
+                                    </div>
+                                </div>";
                             }
                         ?>
-                        
+                        </div>
                     </td>
-                    
-                    <td style="text-align:center;"><a target="_blank" href="<?= base_url() ?>/admin/users/hasillatihan/<?= $user_id ?>/5">Sikap Kerja</a> | <span onclick="listmaterilatihan()" style="cursor:pointer;">Materi</span> | <span style="cursor:pointer;" onclick="listsubmaterilatihan()">Sub Materi</span>
-                    <div class="col-md-12" id="listlatihan"></div>
-                    </td>
-                    
                   </tr>
                   </tbody>
                 </table>
