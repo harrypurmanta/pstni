@@ -72,6 +72,14 @@ class Soalmodel extends Model
                         ->get();
     }
 
+    public function getMateriKeswa() {
+        return $this->db->table('materi')
+                        ->select('*')
+                        ->where('status_cd','normal')
+                        ->whereIn('materi_id',[90])
+                        ->get();
+    }
+
     public function getMateriSK() {
         return $this->db->table('materi')
                         ->select('*')
@@ -117,10 +125,11 @@ class Soalmodel extends Model
                         ->get();
     }
 
-    public function getGroupLatihan() {
+    public function getGroupKeswa() {
         return $this->db->table('group_soal')
                         ->select('group_soal_id,group_nm')
-                        ->whereNotIn('group_soal_id', [4])
+                        ->where('status_cd','normal')
+                        ->where('group_soal_id', 9)
                         ->get();
     }
 

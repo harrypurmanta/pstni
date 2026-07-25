@@ -2,6 +2,8 @@
   $this->session = \Config\Services::session();
 ?>
 <?= $this->include('admin/template/head') ?>
+  <link rel="stylesheet" href="<?= base_url() ?>/plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="<?= base_url() ?>/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
@@ -41,7 +43,7 @@
                       <div class="form-group row">
                         <label for="materi_id" class="col-sm-2 col-form-label">Materi Soal</label>
                         <div class="col-sm-10">
-                          <select name="materi_id" id="materi_id" class="form-control">
+                          <select name="materi_id" id="materi_id" class="form-control select2" style="width: 100%;">
                               <option value="" disabled <?= ($this->session->materi_id == null ? "" : "selected") ?>>Pilih Materi Soal</option>
                               <?php
                                   foreach ($materi as $key) {
@@ -56,8 +58,8 @@
                       <div class="form-group row">
                         <label for="group_id" class="col-sm-2 col-form-label">Group Soal</label>
                         <div class="col-sm-10">
-                          <select name="group_id" id="group_id" class="form-control">
-                              <option value="" disabled <?= ($this->session->group_id == null ? "" : "selected") ?>>Pilih Materi Soal</option>
+                          <select name="group_id" id="group_id" class="form-control select2" style="width: 100%;">
+                              <option value="" disabled <?= ($this->session->group_id == null ? "" : "selected") ?>>Pilih Group Soal</option>
                               <?php
                                   foreach ($group as $key) {
                               ?>
@@ -164,9 +166,13 @@
 </div>
 <!-- ./wrapper -->
 <?= $this->include('admin/template/scriptjs') ?>
+<script src="<?= base_url() ?>/plugins/select2/js/select2.full.min.js"></script>
 <!-- Page specific script -->
 <script>
   $(function () {
+    $('.select2').select2({
+      theme: 'bootstrap4'
+    });
     $('#example2').DataTable({
       "paging": true,
       "lengthChange": false,
@@ -204,8 +210,8 @@
                 title: 'Berhasil',
                 text: res.message,
               }).then(() => {
-                $("#materi_id").val($("#import_materi_id").val());
-                $("#group_id").val($("#import_group_id").val());
+                $("#materi_id").val($("#import_materi_id").val()).trigger('change');
+                $("#group_id").val($("#import_group_id").val()).trigger('change');
                 tampilkansoal();
                 $('#formImportSoal')[0].reset();
               });
@@ -276,7 +282,7 @@
                 data: null,
                 className: "text-left",
                 render: function(data) {
-                    return "<div style=\"margin-bottom:0px;\" class=\"text-center\"><p class=\"mb-0\">" + data.soal_nm + "</p></div><div class=\"mt-2\"> <img src=\"<?= base_url() ?>/images/soal/materi/"+materi_id+"/group/"+group_id+"/"+data.soal_img + "\" alt=\"\" width=\"50%\"></div>"
+                    return "<div style=\"margin-bottom:0px;\" class=\"text-left\"><p class=\"mb-0\">" + data.soal_nm + "</p></div><div class=\"mt-2\"> <img src=\"<?= base_url() ?>/images/soal/materi/"+materi_id+"/group/"+group_id+"/"+data.soal_img + "\" alt=\"\" width=\"50%\"></div>"
                 }
             },
             {

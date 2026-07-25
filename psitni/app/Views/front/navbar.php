@@ -24,13 +24,16 @@ $session = \Config\Services::session();
                             <li class='nav-item'>
                                 <a href='".base_url()."/materi' class='nav-link'>Materi</a>
                             </li>
+                            <li class='nav-item'>
+                                <a href='".base_url()."/keswa' class='nav-link'>Keswa</a>
+                            </li>
                         </ul>
                     </div>";
             } else if ($request->uri->getSegment(2) !== "hasiltryout") {
                 echo "<div class='collapse navbar-collapse pull-left' id='navbar-collapse'>
                         <ul class='nav navbar-nav'>
                             <li class='nav-item'>
-                                <a href='".base_url()."' class='nav-link'>Materi</a>
+                                <a href='".base_url()."' class='nav-link'>Home</a>
                             </li>
                         </ul>
                     </div>";

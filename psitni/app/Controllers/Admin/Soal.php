@@ -1445,18 +1445,26 @@ class Soal extends BaseController
                 }
 
                 if (($pilihan_a === '' && $jawaban_img_a === '') || 
-                    ($pilihan_b === '' && $jawaban_img_b === '') || 
-                    ($pilihan_c === '' && $jawaban_img_c === '') || 
-                    ($pilihan_d === '' && $jawaban_img_d === '')) {
-                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Pilihan A, B, C, dan D tidak boleh kosong (harus diisi teks atau nama file gambar)."]);
+                    ($pilihan_b === '' && $jawaban_img_b === '')) {
+                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Pilihan A dan B tidak boleh kosong (harus diisi teks atau nama file gambar)."]);
                 }
 
-                if (!in_array($kunci, ['A', 'B', 'C', 'D', 'E'])) {
+                if (!in_array($kunci, ['A', 'B', 'C', 'D', 'E', 'Y', 'T'])) {
                     return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Kunci jawaban harus berupa A, B, C, D, atau E."]);
                 }
 
-                if ($kunci === 'E' && $pilihan_e === '' && $jawaban_img_e === '') {
-                    return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Kunci jawaban adalah E, tetapi pilihan E kosong."]);
+                $optionsMapCheck = [
+                    'A' => ['text' => $pilihan_a, 'img' => $jawaban_img_a],
+                    'B' => ['text' => $pilihan_b, 'img' => $jawaban_img_b],
+                    'C' => ['text' => $pilihan_c, 'img' => $jawaban_img_c],
+                    'D' => ['text' => $pilihan_d, 'img' => $jawaban_img_d],
+                    'E' => ['text' => $pilihan_e, 'img' => $jawaban_img_e],
+                ];
+
+                if (isset($optionsMapCheck[$kunci])) {
+                    if ($optionsMapCheck[$kunci]['text'] === '' && $optionsMapCheck[$kunci]['img'] === '') {
+                        return json_encode(['status' => 'error', 'message' => "Baris $rowNum: Kunci jawaban adalah $kunci, tetapi pilihan $kunci kosong."]);
+                    }
                 }
 
                 if (in_array($no_soal, $seenNoSoal)) {
@@ -1518,7 +1526,7 @@ class Soal extends BaseController
                     $jawaban_nm = $optData['text'];
                     $jawaban_img = $optData['img'];
 
-                    if ($pilihan === 'E' && $jawaban_nm === '' && $jawaban_img === '') {
+                    if ($jawaban_nm === '' && $jawaban_img === '') {
                         continue;
                     }
 
