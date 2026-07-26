@@ -394,7 +394,7 @@ $request = \Config\Services::request();
                                 </div>
 
                                 <div class="text-center mt-3">
-                                    <a href="<?=base_url()?>/pembahasan/keswa/ujian/<?= $request->uri->getSegment(3) ?>/<?= $request->uri->getSegment(4) ?>" class="btn btn-email-result">Lanjutkan <i class="fa fa-arrow-circle-right"></i></a>
+                                    <a href="<?=base_url()?>/pembahasan/ujian/<?= $request->uri->getSegment(3) ?>/<?= $request->uri->getSegment(4) ?>" class="btn btn-email-result">Lanjutkan <i class="fa fa-arrow-circle-right"></i></a>
 
                                 </div>
                             </div>

@@ -88,14 +88,15 @@ class Pembahasanmodel extends Model
                         ->get();
     }
 
-    public function getResponBox($soal_id,$group_id,$materi,$user_id,$used) {
-        return $this->db->table('respon_latihan')
+    public function getResponBoxPembahasan($soal_id,$group_id,$materi,$user_id) {
+        return $this->db->table('respon a')
                         ->select('*')
-                        ->where('soal_id',$soal_id)
-                        ->where('group_id',$group_id)
-                        ->where('created_user_id',$user_id)
-                        ->where('used',$used)
-                        ->where('materi',$materi)
+                        ->join('soal b','b.soal_id = a.soal_id')
+                        ->where('a.soal_id',$soal_id)
+                        ->where('a.group_id',$group_id)
+                        ->where('a.created_user_id',$user_id)
+                        ->where('a.materi',$materi)
+                        ->where('a.status_cd','normal')
                         ->get();
     }
 
@@ -120,7 +121,7 @@ class Pembahasanmodel extends Model
     }
 
     public function simpanRespon($data) {
-        $this->db->table('respon_latihan')
+        $this->db->table('respon')
                  ->insert($data);
         return $this->db->insertID();
     }
@@ -174,7 +175,7 @@ class Pembahasanmodel extends Model
     }
 
     public function getResponJenis($jenis_id,$user_id) {
-        return $this->db->table('respon_latihan a')
+        return $this->db->table('respon a')
                         ->select('*, a.pilihan_nm as pilihan_respon, a.no_soal as no_soal_respon,c.kunci as kunci_soal,b.jawaban_nm as jawaban_nmx')
                         ->join('jawaban_latihan b','b.jawaban_id=a.jawaban_id','left')
                         ->join('soal_latihan c','c.soal_id=b.soal_id','left')
@@ -191,7 +192,7 @@ class Pembahasanmodel extends Model
     }
 
     public function getResponByPrev($soal_id,$group_id,$materi,$user_id,$used) {
-        return $this->db->table('respon_latihan')
+        return $this->db->table('respon')
                         ->select('*')
                         ->where('soal_id',$soal_id)
                         ->where('group_id',$group_id)
@@ -205,12 +206,12 @@ class Pembahasanmodel extends Model
     public function getGroup() {
         return $this->db->table('group_soal')
                         ->select('group_soal_id,group_nm')
-                        ->whereIn("group_soal_id",[2,3])
+                        ->whereIn("group_soal_id",[9])
                         ->get();
     }
 
-    public function getUsed($user_id,$materi_id) {
-        return $this->db->table('respon_latihan')
+    public function getUsed($user_id, $materi_id) {
+        return $this->db->table('respon')
                         ->select('MAX(used) as used')
                         ->where('created_user_id',$user_id)
                         ->where('materi',$materi_id)
@@ -218,7 +219,7 @@ class Pembahasanmodel extends Model
     }
 
     public function updateResponPrev($soal_id,$jawaban_id,$group_id,$materi,$user_id,$data,$used) {
-        return $this->db->table('respon_latihan')
+        return $this->db->table('respon')
                         ->set($data)
                         ->where('soal_id',$soal_id)
                         ->where('group_id',$group_id)
@@ -270,7 +271,7 @@ class Pembahasanmodel extends Model
     
 
     public function getKecerdasanSkor($user_id,$materi,$used) {
-        return $this->db->table('respon_latihan a')
+        return $this->db->table('respon a')
                         ->select('*, a.pilihan_nm as pilihan_respon, a.no_soal as no_soal_respon,c.kunci as kunci_soal,b.jawaban_nm as jawaban_nmx')
                         ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
                         ->join('soal c','c.soal_id=b.soal_id','left')
@@ -283,7 +284,7 @@ class Pembahasanmodel extends Model
     }
 
     public function getKepribadianSkor($user_id,$materi,$used) {
-        return $this->db->table('respon_latihan a')
+        return $this->db->table('respon a')
                         ->select('*, a.pilihan_nm as pilihan_respon, a.no_soal as no_soal_respon,c.kunci as kunci_soal,b.jawaban_nm as jawaban_nmx')
                         ->join('jawaban b','b.jawaban_id=a.jawaban_id','left')
                         ->join('soal c','c.soal_id=b.soal_id','left')
@@ -298,7 +299,7 @@ class Pembahasanmodel extends Model
     
 
     public function getResponBoxlatihanmateri($no_soal,$group_id,$materi,$user_id,$session,$used) {
-        return $this->db->table('respon_latihan')
+        return $this->db->table('respon')
                         ->select('*')
                         ->where('no_soal',$no_soal)
                         ->where('group_id',$group_id)
@@ -310,7 +311,7 @@ class Pembahasanmodel extends Model
     }
 
     public function getResponByJawabanIdlatihanmateri($jawaban_id,$group_id,$materi,$user_id,$session,$used) {
-        return $this->db->table('respon_latihan')
+        return $this->db->table('respon')
                         ->select('*')
                         ->where('jawaban_id',$jawaban_id)
                         ->where('group_id',$group_id)
@@ -322,7 +323,7 @@ class Pembahasanmodel extends Model
     }
 
     public function cekResponlatihanmateri($group_id,$materi,$user_id,$session) {
-        return $this->db->table('respon_latihan a')
+        return $this->db->table('respon a')
                         ->select('count(a.respon_id) as jml_respon')
                         ->where('a.group_id',2)
                         ->where('a.created_user_id',$user_id)
@@ -332,7 +333,7 @@ class Pembahasanmodel extends Model
     }
 
     public function getUsedresponlatihan($materi_id,$user_id) {
-        return $this->db->table('respon_latihan')
+        return $this->db->table('respon')
                         ->select('MAX(used) as usedlatihan')
                         ->where('created_user_id',$user_id)
                         ->where('materi',$materi_id)

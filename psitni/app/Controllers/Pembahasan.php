@@ -44,21 +44,9 @@ class Pembahasan extends BaseController
         $materi_id = $request->uri->getSegment(3);
         $group_id = $request->uri->getSegment(4);
         $data['group'] = $this->pembahasanmodel->getGroup()->getResult();
-        $data['soal'] = $this->pembahasanmodel->getSoal(1,2,$materi_id,0)->getResult();
-        $data['jawaban'] = $this->pembahasanmodel->getjawaban($data['soal'][0]->soal_id)->getResult();
-        $data['total_soal'] = $this->pembahasanmodel->getTotalSoal(1,$request->uri->getSegment(3))->getResult();
-
-        $data['used'] = $this->pembahasanmodel->getUsed($this->session->user_id,$materi_id)->getResult();
+        $data['resUsed'] = $this->pembahasanmodel->getUsed($this->session->user_id, $materi_id)->getResult();
+        $data['used'] = $data['resUsed'][0]->used;
         
-        if (count($data['used'])>0) {
-            if ($group_id == 3) {
-                $data['used'] = $data['used'][0]->used;
-            } else {
-                $data['used'] = $data['used'][0]->used + 1;
-            }
-        } else {
-            $data['used'] = 1;
-        }
         return view('front/pembahasan/tryout',$data);
     }
 
@@ -87,41 +75,7 @@ class Pembahasan extends BaseController
             if ($proc == "prev" || $proc == "prevsoal" || $proc == "start") {
 
             } else {
-                $getResponByid = $this->pembahasanmodel->getResponByPrev($soal_id,$group_id,$materi,$this->session->user_id,$used)->getResult();
-                if (count($getResponByid)>0) {
-                    $data = [
-                        "jawaban_id" => $jawaban_id,
-                        "pilihan_nm" => $pilihan_nm,
-                        "soal_id" => $soal_id,
-                        "no_soal" => $no_soal,
-                        "group_id" => $group_id,
-                        "materi" => $materi,
-                        "created_user_id" => $this->session->user_id,
-                        "created_dttm" => $date,
-                        "kolom_id" => $kolom_id,
-                        "used" => $used
-                    ];
-        
-                    $updaterespon = $this->pembahasanmodel->updateResponPrev($soal_id,$jawaban_id,$group_id,$materi,$this->session->user_id,$data,$used);
-                } else {
-                    if ($jawaban_id !== "null" && isset($soal_id)) {
-                        $data = [
-                            "jawaban_id" => $jawaban_id,
-                            "pilihan_nm" => $pilihan_nm,
-                            "soal_id" => $soal_id,
-                            "no_soal" => $no_soal,
-                            "group_id" => $group_id,
-                            "materi" => $materi,
-                            "used" => 0,
-                            "kolom_id" => $kolom_id,
-                            "created_user_id" => $this->session->user_id,
-                            "created_dttm" => $date,
-                            "used" => $used
-                        ];
-            
-                        $respon_id = $this->pembahasanmodel->simpanRespon($data);
-                    }
-                }
+                
             }
                 if ($proc == "selesai") {
                     echo json_encode(array("proc" => $proc));
@@ -141,19 +95,20 @@ class Pembahasan extends BaseController
                     }
                     $pilihan_nmx = "";
                     foreach ($res_ttlsoal as $boxsoal) {
-                        $getResponBox = $this->pembahasanmodel->getResponBox($boxsoal->soal_id,$group_id,$materi,$this->session->user_id,$used)->getResult();
-                        if ($group_id == 2) {
-                            $boxclick = "onclick='setboxsoal($boxsoal->no_soal)'";
-                            $boxcursor = "cursor:pointer;";
-                        } else {
-                            $boxclick = "";
-                            $boxcursor = "";
-                        }
+                        $getResponBox = $this->pembahasanmodel->getResponBoxPembahasan($boxsoal->soal_id,$group_id,$materi,$this->session->user_id, $used)->getResult();
+                        
+                        $boxclick = "onclick='setboxsoal($boxsoal->no_soal)'";
+                        $boxcursor = "cursor:pointer;";
         
                         if (count($getResponBox)>0) {
                             $pilihan_nm = " ".$getResponBox[0]->pilihan_nm;
                             
-                            $style="border:2px solid #3cce3c;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;$boxcursor";
+                            if ($getResponBox[0]->pilihan_nm == $getResponBox[0]->kunci) {
+                                $style="border:2px solid #3cce3c;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;cursor:pointer;";
+                            } else {
+                                $style="border:2px solid red;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;cursor:pointer;";
+                            }
+
                             if ($boxsoal->no_soal == $no_soal) {
                                 $pilihan_nmx = $getResponBox[0]->pilihan_nm;
                                 $style="border:2px solid blue;width:14%;height:36px;padding:5px;margin:5px;border-radius:5px;$boxcursor";
@@ -212,11 +167,13 @@ class Pembahasan extends BaseController
                 if ($res[0]->pembahasan_img != "") {
                      $pembahasan .= "<img style='padding:10px;max-height:100%; max-width:100%;' src='".base_url()."/images/pembahasan/".$res[0]->materi."/".$res[0]->pembahasan_img."'>";
                 }
-                   
-                    $pembahasan .= "<div style='margin: 20px;background-color: white;padding: 10px;'><span>".$res[0]->pembahasan."</span></div>";
+                    if ($res[0]->pembahasan != "") {
+                        $pembahasan .= "<div style='margin: 20px;background-color: white;padding: 10px;'><span>".$res[0]->pembahasan."</span></div>";
+                    }
+                    
                 // } else if ($group_id == 3) {
                     $resjawaban_nm = $this->pembahasanmodel->getJawabannm($res[0]->kunci,$res[0]->soal_id)->getResult();
-                    $pembahasan .= "<div style='margin: 20px;background-color: white;padding: 10px;'><span>".$resjawaban_nm[0]->pilihan_nm.". ".$resjawaban_nm[0]->jawaban_nm."</span></div>";
+                    $pembahasan .= "<div style='margin: 20px;background-color: white;padding: 10px;'><span><b>".$resjawaban_nm[0]->pilihan_nm.".</b> ".$resjawaban_nm[0]->jawaban_nm."</span></div>";
                 // }
                 
         $pembahasan .= "</div>
