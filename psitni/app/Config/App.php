@@ -177,7 +177,7 @@ class App extends BaseConfig
      *
      * @var int
      */
-    public $sessionExpiration = 7200;
+    public $sessionExpiration = 86400; // 86400 detik = 24 jam (1 hari)
 
     /**
      * --------------------------------------------------------------------------
@@ -221,7 +221,7 @@ class App extends BaseConfig
      *
      * @var int
      */
-    public $sessionTimeToUpdate = 300;
+    public $sessionTimeToUpdate = 7200; // Regenerasi ID session setiap 2 jam
 
     /**
      * --------------------------------------------------------------------------

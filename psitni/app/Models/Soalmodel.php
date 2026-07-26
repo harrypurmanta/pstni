@@ -988,4 +988,98 @@ public function getAllSoalSK() {
             ->where('materi', $materi)
             ->get();
     }
+
+    public function getKeswaActiveUsed($user_id, $materi_id, $group_id) {
+        return $this->db->table('respon')
+                        ->select('used')
+                        ->where('created_user_id', $user_id)
+                        ->where('materi', $materi_id)
+                        ->where('group_id', $group_id)
+                        ->where('status_cd', 'normal')
+                        ->orderBy('used', 'DESC')
+                        ->limit(1)
+                        ->get();
+    }
+
+    public function getKeswaMaxUsed($user_id, $materi_id, $group_id) {
+        return $this->db->table('respon')
+                        ->select('MAX(used) as maxused')
+                        ->where('created_user_id', $user_id)
+                        ->where('materi', $materi_id)
+                        ->where('group_id', $group_id)
+                        ->get();
+    }
+
+    public function getResponByPrevKeswa($soal_id, $group_id, $materi, $user_id, $used) {
+        return $this->db->table('respon')
+                        ->select('*')
+                        ->where('soal_id', $soal_id)
+                        ->where('group_id', $group_id)
+                        ->where('materi', $materi)
+                        ->where('created_user_id', $user_id)
+                        ->where('used', $used)
+                        ->where('status_cd', 'normal')
+                        ->get();
+    }
+
+    public function updateResponPrevKeswa($soal_id, $jawaban_id, $group_id, $materi, $user_id, $used, $data) {
+        return $this->db->table('respon')
+                        ->set($data)
+                        ->where('soal_id', $soal_id)
+                        ->where('group_id', $group_id)
+                        ->where('materi', $materi)
+                        ->where('created_user_id', $user_id)
+                        ->where('used', $used)
+                        ->where('status_cd', 'normal')
+                        ->update();
+    }
+
+    public function getResponByGroupMateriUserKeswa($group_id, $materi, $user_id, $used) {
+        return $this->db->table('respon')
+                        ->select('soal_id, pilihan_nm')
+                        ->where('group_id', $group_id)
+                        ->where('materi', $materi)
+                        ->where('created_user_id', $user_id)
+                        ->where('used', $used)
+                        ->where('status_cd', 'normal')
+                        ->get();
+    }
+
+    public function getResponCountByMateriUserKeswa($group_id, $materi, $user_id, $used) {
+        return $this->db->table('respon')
+                        ->select('count(respon_id) as jumlah_jawab')
+                        ->where('group_id', $group_id)
+                        ->where('materi', $materi)
+                        ->where('created_user_id', $user_id)
+                        ->where('used', $used)
+                        ->where('status_cd', 'normal')
+                        ->get();
+    }
+
+    public function updateFinishResponKeswa($materi_id, $group_id, $user_id, $used, $data) {
+        return $this->db->table('respon')
+                        ->set($data)
+                        ->where('materi', $materi_id)
+                        ->where('group_id', $group_id)
+                        ->where('created_user_id', $user_id)
+                        ->where('used', $used)
+                        ->where('status_cd', 'normal')
+                        ->update();
+    }
+
+    public function getResponPaketKeswa($group_id, $materi, $user_id, $used) {
+        return $this->db->table('respon a')
+                        ->select("c.group_soal_id, c.group_nm,
+                                    COUNT(*) as total_soal,
+                                    SUM(CASE WHEN b.kunci = a.pilihan_nm THEN 1 ELSE 0 END) as total_benar,
+                                    SUM(CASE WHEN b.kunci != a.pilihan_nm THEN 1 ELSE 0 END) as total_salah")
+                        ->join('soal b', 'b.soal_id=a.soal_id')
+                        ->join('group_soal c', 'c.group_soal_id=a.group_id')
+                        ->where('a.materi', $materi)
+                        ->where('a.created_user_id', $user_id)
+                        ->where('a.used', $used)
+                        ->whereIn('a.status_cd', ['normal', 'finish'])
+                        ->groupBy('a.group_id')
+                        ->get();
+    }
 }

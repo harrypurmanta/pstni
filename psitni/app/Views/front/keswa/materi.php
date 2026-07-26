@@ -26,7 +26,7 @@
                 <section class="content">
                     <div class="row">
                     <div class="col-md-12" style="display: flex;justify-content: center;margin-bottom:20px;">
-                                <h2><b>MATERI</b></h2>
+                                <h2><b>KESWA</b></h2>
                             </div>
                         <div class="col-md-12">
                             <?php
@@ -34,16 +34,8 @@
                                 $user_id = $this->session->user_id;
                                 $db = db_connect();
                                 foreach ($materi as $key) {
-
-                                    $query = $db->query("SELECT * FROM respon WHERE materi = $key->materi_id AND created_user_id = $user_id AND status_cd != 'nullified'")->getResultArray();
-                                    if (count($query)>0) {
-                                        // }
-                                        $click = base_url()."/tryout/hasiltryout/".$key->materi_id."/9";
-                                        $class_bg = "bg-green";
-                                    } else {
                                         $click = base_url()."/keswa/pilihanMateri/".$key->materi_id."/9";
                                         $class_bg = "bg-gray";
-                                    }
                             ?>
                             <div class="col-lg-3" style="border-radius:10px;">
                                 <div class="small-box <?= $class_bg ?>" style="border-radius:10px;">

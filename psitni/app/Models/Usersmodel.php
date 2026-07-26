@@ -58,11 +58,6 @@ class Usersmodel extends Model
                  ->get();
     }
 
-    public function getbyUsernm($user_nm){
-        return $this->db->table('users')
-                        ->where('user_nm',$user_nm)
-                        ->get();
-    }
 
     public function updateuser($person_id,$data) {
         return $this->db->table('users')
@@ -124,9 +119,6 @@ class Usersmodel extends Model
                         ->get();
     }
 
-    public function gethasillatihanbyid($user_id) {
-
-    }
 
     public function getJenisSoal() {
         return $this->db->table('jenis_soal')

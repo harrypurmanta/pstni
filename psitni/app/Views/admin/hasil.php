@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin | Users</title>
+  <title>Hasil Siswa</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -15,6 +15,13 @@
   <link rel="stylesheet" href="<?= base_url() ?>/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?= base_url() ?>/dist/dist/css/adminlte.min.css">
+  <style>
+    .biodata-table td {
+      padding-top: 2px !important;
+      padding-bottom: 2px !important;
+      vertical-align: middle;
+    }
+  </style>
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
@@ -48,8 +55,8 @@
         <div class="row">
           <div class="col-12">
             <div class="card">
-                <div class="card-header bg-light">
-                  <table class="table table-sm table-borderless m-0 w-100">
+                <div class="card-header bg-light py-2 px-3">
+                  <table class="table table-sm table-borderless m-0 w-100 biodata-table">
                     <?php
                     foreach ($user as $key) {
                         $dttm = explode(" ", $key->birth_dttm ?? '');

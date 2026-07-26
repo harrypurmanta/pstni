@@ -84,6 +84,7 @@
                       <?= $key->expired_dttm ? date('d-m-Y H:i:s', strtotime($key->expired_dttm)) : '<span class="badge badge-success">Selamanya</span>' ?>
                     </td>
                     <td style="text-align:center; vertical-align: middle;">
+                      <button onclick="edittoken(<?= $key->token_id ?>, '<?= esc($key->token) ?>', '<?= $key->materi_id ?>', '<?= $key->expired_dttm ?>')" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> Edit</button>
                       <button onclick="hapustoken(<?= $key->token_id ?>)" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Hapus</button>
                     </td>
                   </tr>
@@ -145,6 +146,50 @@
       </div>
       <!-- /.modal-dialog -->
     </div>
+    <!-- /.modal-tambah -->
+
+    <!-- Modal Edit -->
+    <div class="modal fade" id="modal-edit">
+      <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+          <div class="modal-header bg-warning">
+            <h4 class="modal-title"><i class="fa fa-edit"></i> Edit Token</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form id="form-edit-token">
+            <input type="hidden" id="edit_token_id" name="token_id">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="edit_token">Token</label>
+                <input type="text" class="form-control" id="edit_token" name="token" placeholder="Masukkan Kode Token (maksimal 6 karakter)" required autocomplete="off" style="text-transform: uppercase;" maxlength="6">
+              </div>
+              <div class="form-group">
+                <label for="edit_materi_id">Materi</label>
+                <select class="form-control select2-edit" id="edit_materi_id" name="materi_id" required data-placeholder="-- Pilih Materi --" style="width: 100%;">
+                  <option value=""></option>
+                  <?php foreach ($materi as $m): ?>
+                    <option value="<?= $m->materi_id ?>"><?= esc($m->materi_nm) ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="edit_expired_dttm">Waktu Kedaluwarsa (Optional)</label>
+                <input type="datetime-local" class="form-control" id="edit_expired_dttm" name="expired_dttm">
+                <small class="form-text text-muted">Kosongkan jika token tidak ada batas waktu (aktif selamanya).</small>
+              </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> Update</button>
+            </div>
+          </form>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
 
   </div>
   <!-- /.content-wrapper -->
@@ -188,9 +233,17 @@
       "responsive": true,
     });
 
-    // Initialize Select2
-    $('.select2').select2({
+    // Initialize Select2 with dropdownParent for Bootstrap Modals
+    $('#materi_id').select2({
       theme: 'bootstrap4',
+      dropdownParent: $('#modal-tambah'),
+      placeholder: '-- Pilih Materi --',
+      allowClear: true
+    });
+
+    $('#edit_materi_id').select2({
+      theme: 'bootstrap4',
+      dropdownParent: $('#modal-edit'),
       placeholder: '-- Pilih Materi --',
       allowClear: true
     });
@@ -229,7 +282,56 @@
         }
       });
     });
+
+    $("#form-edit-token").on("submit", function(e) {
+      e.preventDefault();
+      $.ajax({
+        url: "<?= base_url('admin/token/update') ?>",
+        type: "post",
+        data: $(this).serialize(),
+        dataType: "json",
+        success: function(response) {
+          if (response.status === 'sukses') {
+            $('#modal-edit').modal("hide");
+            Swal.fire({
+              icon: 'success',
+              title: 'Berhasil',
+              text: 'Token berhasil diperbarui!'
+            }).then(() => {
+              location.reload();
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal',
+              text: response.message || "Gagal memperbarui token"
+            });
+          }
+        },
+        error: function() {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "Gagal terhubung ke server"
+          });
+        }
+      });
+    });
   });
+
+  function edittoken(token_id, token, materi_id, expired_dttm) {
+    $("#edit_token_id").val(token_id);
+    $("#edit_token").val(token);
+    $("#edit_materi_id").val(materi_id).trigger('change');
+    if (expired_dttm && expired_dttm !== 'null' && expired_dttm !== '') {
+      let formattedDate = expired_dttm.replace(' ', 'T').substring(0, 16);
+      $("#edit_expired_dttm").val(formattedDate);
+    } else {
+      $("#edit_expired_dttm").val('');
+    }
+    $("#modal-edit").modal("show");
+  }
+
 
   function hapustoken(token_id) {
     Swal.fire({

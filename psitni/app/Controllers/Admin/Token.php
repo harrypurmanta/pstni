@@ -26,6 +26,7 @@ class Token extends BaseController
                      ->select('a.*, b.materi_nm')
                      ->join('materi b', 'b.materi_id = a.materi_id', 'left')
                      ->where('a.status_cd', 'normal')
+                     ->orderBy('token_id', 'desc')
                      ->get()
                      ->getResult();
 
@@ -102,6 +103,35 @@ class Token extends BaseController
         $db->table('token')
            ->where('token_id', $token_id)
            ->update(['status_cd' => 'nullified']);
+
+        return $this->response->setJSON(['status' => 'sukses']);
+    }
+
+    public function update()
+    {
+        if ($this->session->get("user_nm") == "") {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Session expired']);
+        }
+
+        $token_id = $this->request->getPost('token_id');
+        $token = $this->request->getPost('token');
+        $materi_id = $this->request->getPost('materi_id');
+        $expired_dttm = $this->request->getPost('expired_dttm');
+
+        if (empty($token_id) || empty($token) || empty($materi_id)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Data tidak lengkap']);
+        }
+
+        $expired_val = !empty($expired_dttm) ? date('Y-m-d H:i:s', strtotime($expired_dttm)) : null;
+
+        $db = \Config\Database::connect();
+        $db->table('token')
+           ->where('token_id', $token_id)
+           ->update([
+               'token' => strtoupper(trim($token)),
+               'materi_id' => $materi_id,
+               'expired_dttm' => $expired_val
+           ]);
 
         return $this->response->setJSON(['status' => 'sukses']);
     }

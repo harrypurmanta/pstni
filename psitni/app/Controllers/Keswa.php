@@ -34,6 +34,9 @@ class Keswa extends BaseController
 
     public function pilihanMateri() {
         $request = \Config\Services::request();
+        // Hapus session keswa_used saat masuk ke petunjuk pengerjaan agar tombol "Mulai" membuat percobaan baru yang bersih
+        $this->session->remove('keswa_used');
+
         $data = [
             'materi_id' => $request->uri->getSegment(3),
             'group' => $this->soalmodel->getGroupByid($request->uri->getSegment(4))->getResult(),
@@ -50,6 +53,16 @@ class Keswa extends BaseController
 
         $request = \Config\Services::request();
         $materi_id = $request->uri->getSegment(3);
+        $group_id = $request->uri->getSegment(4);
+        $user_id = $this->session->user_id;
+
+        // Jika session keswa_used belum ada (dimulai dari klik Mulai baru), selalu buat percobaan (used) baru
+        if (!$this->session->has('keswa_used')) {
+            $maxRow = $this->soalmodel->getKeswaMaxUsed($user_id, $materi_id, $group_id)->getRow();
+            $used = ($maxRow && $maxRow->maxused !== null) ? ((int)$maxRow->maxused + 1) : 1;
+            $this->session->set('keswa_used', $used);
+        }
+
         $data['group'] = $this->soalmodel->getGroupKeswa()->getResult();
         if ($request->uri->getSegment(4) == 8) {
             $kolom_id = 1;
@@ -74,7 +87,16 @@ class Keswa extends BaseController
         $materi = $this->request->getPost("materi");
         $proc = $this->request->getPost("proc");
         $waktu = $this->request->getPost("waktu");
+        $user_id = $this->session->user_id;
         $date = date("Y-m-d H:i:s");
+
+        $used = $this->session->get('keswa_used');
+        if (!$used) {
+            $maxRow = $this->soalmodel->getKeswaMaxUsed($user_id, $materi, $group_id)->getRow();
+            $used = ($maxRow && $maxRow->maxused !== null) ? ((int)$maxRow->maxused + 1) : 1;
+            $this->session->set('keswa_used', $used);
+        }
+
         $soal_nm = "";
         $res_ttlsoal = [];
         $jawaban_idx = "";
@@ -89,7 +111,7 @@ class Keswa extends BaseController
             if ($proc == "prev" || $proc == "prevsoal" || $proc == "start") {
 
             } else {
-                $getResponByid = $this->soalmodel->getResponByPrev($soal_id,$group_id,$materi,$this->session->user_id)->getResult();
+                $getResponByid = $this->soalmodel->getResponByPrevKeswa($soal_id,$group_id,$materi,$user_id, $used)->getResult();
                 if (count($getResponByid)>0) {
                     $data = [
                         "jawaban_id" => $jawaban_id,
@@ -98,13 +120,13 @@ class Keswa extends BaseController
                         "no_soal" => $no_soal,
                         "group_id" => $group_id,
                         "materi" => $materi,
-                        "created_user_id" => $this->session->user_id,
+                        "created_user_id" => $user_id,
                         "created_dttm" => $date,
-                        "used" => 0,
+                        "used" => $used,
                         "kolom_id" => $kolom_id,
                     ];
         
-                    $updaterespon = $this->soalmodel->updateResponPrev($soal_id,$jawaban_id,$group_id,$materi,$this->session->user_id,$data);
+                    $updaterespon = $this->soalmodel->updateResponPrevKeswa($soal_id,$jawaban_id,$group_id,$materi,$user_id,$used,$data);
                 } else {
                     if ($jawaban_id !== "null" && isset($soal_id)) {
                         $data = [
@@ -114,9 +136,9 @@ class Keswa extends BaseController
                             "no_soal" => $no_soal,
                             "group_id" => $group_id,
                             "materi" => $materi,
-                            "used" => 0,
+                            "used" => $used,
                             "kolom_id" => $kolom_id,
-                            "created_user_id" => $this->session->user_id,
+                            "created_user_id" => $user_id,
                             "created_dttm" => $date,
                         ];
             
@@ -145,8 +167,8 @@ class Keswa extends BaseController
                         $res_ttlsoal = $this->soalmodel->getTotalSoal($group_id,$materi)->getResult();
                     }
 
-                    // Ambil semua jawaban tersimpan untuk group dan materi ini secara sekaligus (bulk)
-                    $all_respon = $this->soalmodel->getResponByGroupMateriUser($group_id, $materi, $this->session->user_id)->getResult();
+                    // Ambil semua jawaban tersimpan untuk group, materi, dan percobaan ini
+                    $all_respon = $this->soalmodel->getResponByGroupMateriUserKeswa($group_id, $materi, $user_id, $used)->getResult();
                     $respon_map = [];
                     foreach ($all_respon as $resp) {
                         $respon_map[$resp->soal_id] = $resp->pilihan_nm;
@@ -182,7 +204,7 @@ class Keswa extends BaseController
                         }
                     }
     
-                    $getjumlahjawab = $this->soalmodel->getResponCountByMateriUser($group_id,$materi,$this->session->user_id)->getResult();
+                    $getjumlahjawab = $this->soalmodel->getResponCountByMateriUserKeswa($group_id,$materi,$user_id, $used)->getResult();
                     $jumlahjawab = (count($getjumlahjawab)>0) ? (int)$getjumlahjawab[0]->jumlah_jawab : 0;
                     
                     return $this->response->setJSON([
@@ -214,10 +236,20 @@ class Keswa extends BaseController
         $materi_id = $this->request->getPost("materi_id");
         $group_id = $this->request->getPost("group_id");
         $user_id = $this->session->user_id;
+        $used = $this->session->get("keswa_used");
+
+        if (!$used) {
+            $maxRow = $this->soalmodel->getKeswaMaxUsed($user_id, $materi_id, $group_id)->getRow();
+            $used = ($maxRow && $maxRow->maxused !== null) ? ((int)$maxRow->maxused) : 1;
+        }
+
         $data = [
             "status_cd" => "finish"
         ];
-        $reset = $this->soalmodel->updateFinishRespon($materi_id,$group_id,$user_id,$data);
+        $reset = $this->soalmodel->updateFinishResponKeswa($materi_id,$group_id,$user_id,$used,$data);
+
+        // Hapus keswa_used dari session agar tes berikutnya menghasilkan percobaan baru
+        $this->session->remove("keswa_used");
 
         echo json_encode($reset);exit;
     }
@@ -230,11 +262,18 @@ class Keswa extends BaseController
         $user_id = $this->session->user_id;
         $materi_id = $request->uri->getSegment(3);
         $group_id = $request->uri->getSegment(4);
-        $getRespon = $this->soalmodel->getResponPaket($group_id, $materi_id, $user_id)->getResult();
+        $used = $request->uri->getSegment(5);
 
-        
+        if (!$used) {
+            $maxRow = $this->soalmodel->getKeswaMaxUsed($user_id, $materi_id, $group_id)->getRow();
+            $used = ($maxRow && $maxRow->maxused !== null) ? (int)$maxRow->maxused : 1;
+        }
+
+        $getRespon = $this->soalmodel->getResponPaketKeswa($group_id, $materi_id, $user_id, $used)->getResult();
+
         $data = [
-            "getRespon" => $getRespon
+            "getRespon" => $getRespon,
+            "hasil" => [1 => [], 2 => [], 3 => [], 4 => []]
         ];
         
         return view('front/keswa/hasiltryout',$data);
