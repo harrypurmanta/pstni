@@ -724,8 +724,12 @@ $request = \Config\Services::request();
                     let jawabanHtml = "";
                     $("#dv_main_jawaban").removeClass("horizontal_layout");
                     if (data.group_id == 7 && parseInt(data.no_soal) >= 11 && parseInt(data.no_soal) <= 20) {
-                        jawabanHtml = `<div class='jawaban_dv' style='padding: 10px;'>
-                            <input type='text' class='form-control' name='inp_pilihan_nm_7' id='inp_pilihan_nm_7' placeholder='Ketik jawaban di sini...' autocomplete='off' value='${data.pilihan_nmx || ""}' style='color:#000;font-size:16px;height:45px;'>
+                        jawabanHtml = `
+                        <div class='text-center'>
+                            <h5 class="box-title">Apa yang terlihat di sini ? / Menurut Anda ini gambar apa ?</h5>
+                        </div>
+                        <div class='jawaban_dv' style='padding: 10px;'>
+                            <input type='text' class='form-control' name='inp_pilihan_nm_7' id='inp_pilihan_nm_7' placeholder='Ketik jawaban di sini...' autocomplete='off' value='${data.pilihan_nmx || ""}' style='color: #000; font-size: 16px; height: 45px;'>
                         </div>`;
                     } else {
                         if (data.jawaban_list) {
