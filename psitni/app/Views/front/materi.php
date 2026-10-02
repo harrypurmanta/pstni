@@ -38,7 +38,7 @@
                                     $query = $db->query("SELECT * FROM respon WHERE materi = $key->materi_id AND created_user_id = $user_id AND status_cd != 'nullified'")->getResultArray();
                                     if (count($query)>0) {
                                         // }
-                                        $click = base_url()."/tryout/hasiltryout/".$key->materi_id."/8";
+                                        $click = base_url()."/tryout/hasiltryout/".$key->materi_id."/7";
                                         $class_bg = "bg-green";
                                     } else {
                                         if ($key->materi_id == 1) {

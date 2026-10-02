@@ -125,7 +125,7 @@ class Tryout extends BaseController
                         $no_soal = $no_soal + 1;
                     }
                     
-                    $res = $this->soalmodel->getSoal($no_soal,$group_id,$materi,$kolom_id)->getResult();
+                    $res = $this->soalmodel->getSoal($no_soal, $group_id, $materi, $kolom_id)->getResult();
                     if (count($res) == 0 && $proc == "next") {
                         return $this->response->setJSON(array("proc" => "selesai"));
                     }
@@ -258,7 +258,7 @@ class Tryout extends BaseController
         
         $no_soal++;
 
-        if ($proc === "persiapan" || $no_soal == 51 && $group_id == 9 && $kolom_id <= 20 && $sk_group_id <= 4) {
+        if ($proc === "persiapan" || $no_soal == 51 && $group_id == 8 && $kolom_id <= 20 && $sk_group_id <= 4) {
             return $this->response->setJSON([
                 "ret" => "persiapan",
                 "kolom_id" => $kolom_id,
@@ -336,6 +336,36 @@ class Tryout extends BaseController
         return view('front/hasiltryout',$data);
     }
 
+    public function hasiltryoutPauli() {
+        if ($this->session->get("user_nm") == "") {
+			return redirect('/');
+		}
+        $request = \Config\Services::request();
+        $user_id = $this->session->user_id;
+        $materi_id = $request->uri->getSegment(3);
+        $group_id = $request->uri->getSegment(4);
+
+        $hasil = [];
+        // $lastUsed = $this->soalmodel->getLastUsedPauli($user_id, $group_id, $materi_id)->getRow();
+        // $user = $this->usersmodel->getbyUserId($user_id)->getResult();
+        for ($i = 1; $i <= 4; $i++) {
+            $hasil[$i] = $this->soalmodel
+                ->getHasilPauliByUserUsed(
+                    $user_id,
+                    $i, // sk_group_id,
+                    $materi_id,
+                    1
+                )
+                ->getResult();
+        }
+        
+        $data = [
+            "hasil" => $hasil
+        ];
+        
+        return view('front/pauli/hasiltryout',$data);
+    }
+
     function saveChart($base64, $name)
     {
         $base64 = str_replace('data:image/png;base64,', '', $base64);
@@ -390,15 +420,15 @@ class Tryout extends BaseController
         $user_id = $this->session->user_id;
         $materi_id = $this->request->getPost("materi");
         $group_id = $this->request->getPost("group_id");
-        $chart1 = $this->request->getPost('chart1');
-        $chart2 = $this->request->getPost('chart2');
-        $chart3 = $this->request->getPost('chart3');
-        $chart4 = $this->request->getPost('chart4');
+        // $chart1 = $this->request->getPost('chart1');
+        // $chart2 = $this->request->getPost('chart2');
+        // $chart3 = $this->request->getPost('chart3');
+        // $chart4 = $this->request->getPost('chart4');
 
-        $chart1File = $this->saveChart($chart1, $materi_id.'_'.$this->session->user_nm.'_1');
-        $chart2File = $this->saveChart($chart2, $materi_id.'_'.$this->session->user_nm.'_2');
-        $chart3File = $this->saveChart($chart3, $materi_id.'_'.$this->session->user_nm.'_3');
-        $chart4File = $this->saveChart($chart4, $materi_id.'_'.$this->session->user_nm.'_4');
+        // $chart1File = $this->saveChart($chart1, $materi_id.'_'.$this->session->user_nm.'_1');
+        // $chart2File = $this->saveChart($chart2, $materi_id.'_'.$this->session->user_nm.'_2');
+        // $chart3File = $this->saveChart($chart3, $materi_id.'_'.$this->session->user_nm.'_3');
+        // $chart4File = $this->saveChart($chart4, $materi_id.'_'.$this->session->user_nm.'_4');
 
         $mhs = $this->usersmodel->getbyUserId($user_id)->getResult();
         if (empty($mhs)) {
@@ -538,6 +568,154 @@ class Tryout extends BaseController
         $filePathSalah = WRITEPATH . 'upload/salah/' . $filenameSalah;
         $pdf2->Output($filePathSalah, 'F'); // simpan ke file
 
+        // $filenamePauli = str_replace(" ", "_", $mhs[0]->person_nm)."_materi".$materi_id."_PAULI.pdf";
+        // $filePathPauli = WRITEPATH . 'upload/pauli/' . $filenamePauli;
+
+        // $hasil = [];
+        // for ($i = 1; $i <= 4; $i++) {
+        //     $hasil[$i] = $this->soalmodel
+        //         ->getHasilPauliByUserUsed(
+        //             $user_id,
+        //             $i, // sk_group_id,
+        //             $materi_id,
+        //             1
+        //         )
+        //         ->getResult();
+        // }
+
+        // $pdf3 = new TCPDF();
+        // $pdf3->AddPage();
+        // $pdf3->SetFont('helvetica','',8);
+        // $pdf3->SetMargins(10, 10, 10);
+        // $pdf3->SetAutoPageBreak(TRUE, 10);
+        // $pdf3->setPrintHeader(false);
+        // $pdf3->setPrintFooter(false);
+
+        // $htmlPauli = '<h2 align="center" style="margin-bottom: 10px !important; padding: 0px;">PAULI</h2>
+        //     <table border="0" width="100%" cellpadding="2">
+        //     <tr>
+        //         <td width="50%" valign="top">
+        //             <h3 align="center">Lembar 1</h3>
+        //             '.$this->buildTablePauli($hasil[1]).'
+        //         </td>
+        //         <td width="50%" valign="top">
+        //             <h3 align="center">Lembar 2</h3>
+        //             '.$this->buildTablePauli($hasil[2]).'
+        //         </td>
+        //     </tr>
+        //     <tr>
+        //         <td width="50%" valign="top">
+        //             <h3 align="center">Lembar 3</h3>
+        //             '.$this->buildTablePauli($hasil[3]).'
+        //         </td>
+        //         <td width="50%" valign="top">
+        //             <h3 align="center">Lembar 4</h3>
+        //             '.$this->buildTablePauli($hasil[4]).'
+        //         </td>
+        //     </tr>
+        //     </table>';
+        
+        // $pdf3->writeHTML($htmlPauli, true, false, true, false, '');
+
+        // Halaman PDF Chart
+        // $pdf3->AddPage();
+        // $htmlChart = '
+        //     <h2 align="center">Grafik Pauli</h2>
+
+        //     <table border="0" width="100%" cellpadding="5">
+        //         <tr>
+        //             <td align="center">
+        //                 <h4>Lembar 1</h4>
+        //                 <img src="'.$chart1File.'" height="500">
+        //             </td>
+        //             <td align="center">
+        //                 <h4>Lembar 2</h4>
+        //                 <img src="'.$chart2File.'" height="500">
+        //             </td>
+        //         </tr>
+        //         <tr>
+        //             <td align="center">
+        //                 <h4>Lembar 3</h4>
+        //                 <img src="'.$chart3File.'" height="500">
+        //             </td>
+        //             <td align="center">
+        //                 <h4>Lembar 4</h4>
+        //                 <img src="'.$chart4File.'" height="500">
+        //             </td>
+        //         </tr>
+        //     </table>
+        //     ';
+
+        // $pdf3->writeHTML($htmlChart, true, false, true, false, '');
+        // $pdf3->Output($filePathPauli, 'F'); // simpan ke file
+
+        $pdf->SetCreator(PDF_CREATOR);
+		$pdf->SetAuthor('Bintang Timur Prestasi');
+		$pdf->SetTitle('Hasil Tes');
+		$pdf->SetSubject('Hasil Tes');
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->SetMargins(10, 10, 10);
+        $pdf->SetAutoPageBreak(TRUE, 10);
+        $pdf->SetImageScale(1.25); // Skala gambar
+        $pdf->addPage();
+
+        // $pdf->writeHTML($tabelHasil, true, false, true, false, '');
+
+       
+        // $filePath = WRITEPATH . 'upload/' . $filename;
+        // $pdf->Output($filePath, 'F'); // simpan ke file
+      
+            $mailService->setTo($mhs[0]->email);
+            $mailService->setFrom('admin@bintangtimurprestasi.com', 'Bintang Timur Prestasi');
+            // $mailService->attach($filePath);
+            $mailService->attach($filePathSalah);
+            // $mailService->attach($filePathPauli);
+            $mailService->setSubject('Hasil Tes BTP  Psi TNI');
+            $mailService->setMessage('Terima kasih telah mengikuti tryout Bintang Timur Prestasi. berikut kami kirimkan hasil anda');
+            $sendit = $mailService->send();
+            if (!$sendit) {
+                $debug_msg = $mailService->printDebugger(['headers', 'subject', 'body']);
+                log_message('error', 'SMTP Debug: ' . $debug_msg);
+                echo json_encode(['status' => 'gagal', 'debug' => $debug_msg]);
+            } else {
+                echo json_encode(['status' => 'sukses']);
+            }
+
+    }
+
+    public function kirimemailPauli() {
+        if ($this->session->get("user_nm") == "") {
+			return redirect('/');
+		}
+        $pdf = new TCPDF('P', PDF_UNIT, 'A4', true, 'UTF-8', false);
+        $pdf3 = new TCPDF('P', PDF_UNIT, 'A4', true, 'UTF-8', false);
+
+        $mailService = \Config\Services::email();
+        $user_id = $this->session->user_id;
+        $materi_id = $this->request->getPost("materi");
+        $group_id = $this->request->getPost("group_id");
+        $chart1 = $this->request->getPost('chart1');
+        $chart2 = $this->request->getPost('chart2');
+        $chart3 = $this->request->getPost('chart3');
+        $chart4 = $this->request->getPost('chart4');
+
+        $chart1File = $this->saveChart($chart1, $materi_id.'_'.$this->session->user_nm.'_1');
+        $chart2File = $this->saveChart($chart2, $materi_id.'_'.$this->session->user_nm.'_2');
+        $chart3File = $this->saveChart($chart3, $materi_id.'_'.$this->session->user_nm.'_3');
+        $chart4File = $this->saveChart($chart4, $materi_id.'_'.$this->session->user_nm.'_4');
+
+        $mhs = $this->usersmodel->getbyUserId($user_id)->getResult();
+        if (empty($mhs)) {
+            return $this->response->setJSON([
+                "status" => false,
+                "message" => "Data user tidak ditemukan"
+            ]);
+        }
+        
+
+        
+
         $filenamePauli = str_replace(" ", "_", $mhs[0]->person_nm)."_materi".$materi_id."_PAULI.pdf";
         $filePathPauli = WRITEPATH . 'upload/pauli/' . $filenamePauli;
 
@@ -639,7 +817,7 @@ class Tryout extends BaseController
             $mailService->setTo($mhs[0]->email);
             $mailService->setFrom('admin@bintangtimurprestasi.com', 'Bintang Timur Prestasi');
             // $mailService->attach($filePath);
-            $mailService->attach($filePathSalah);
+            // $mailService->attach($filePathSalah);
             $mailService->attach($filePathPauli);
             $mailService->setSubject('Hasil Tes BTP  Psi TNI');
             $mailService->setMessage('Terima kasih telah mengikuti tryout Bintang Timur Prestasi. berikut kami kirimkan hasil anda');

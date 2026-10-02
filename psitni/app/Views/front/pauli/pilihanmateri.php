@@ -286,7 +286,16 @@
                     </div>
 
                     <?php
-                        echo "<a onclick='showtoken(".$group[0]->group_soal_id.", ".$materi_id.")' href='javascript:void(0)' class='btn-start-exam'><i class='fa fa-play-circle mr-2'></i> Mulai Ujian</a>";
+                        if ($group[0]->group_soal_id == 1) {
+                            echo "<a onclick='showtoken(".$group[0]->group_soal_id.", ".$materi_id.")' href='javascript:void(0)' class='btn-start-exam'><i class='fa fa-play-circle mr-2'></i> Mulai Ujian</a>";
+                        } else {
+                            if ($group[0]->group_soal_id == 8) {
+                                $url = base_url("tryout/ujianPauli/" . $materi_id . "/" . $group[0]->group_soal_id);
+                            } else {
+                                $url = base_url("tryout/ujian/" . $materi_id . "/" . $group[0]->group_soal_id);
+                            }
+                            echo "<a href='" . $url . "' class='btn-start-exam'><i class='fa fa-play-circle mr-2'></i> Mulai Ujian</a>";
+                        }
                     ?>
                 </div>
             </div>
@@ -359,7 +368,11 @@
                 },
                 success: function(data) {
                     if (data == "sukses") {
-                        window.location.href = "<?= base_url() ?>/tryout/ujianPauli/"+materi_id+"/"+group_id;
+                        if (group_id == 8) {
+                            window.location.href = "<?= base_url() ?>/tryout/ujianPauli/"+materi_id+"/"+group_id;
+                        } else {
+                            window.location.href = "<?= base_url() ?>/tryout/ujian/"+materi_id+"/"+group_id;
+                        } 
                     } else {
                         alert("Token salah/tidak ada, hubungi administrator");
                     }

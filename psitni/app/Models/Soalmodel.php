@@ -68,7 +68,7 @@ class Soalmodel extends Model
         return $this->db->table('materi')
                         ->select('*')
                         ->where('status_cd','normal')
-                        ->whereNotIn('materi_nm',["Sikap Kerja","Latihan"])
+                        ->whereNotIn('materi_nm',["Sikap Kerja","Latihan","Keswa 1"])
                         ->get();
     }
 
@@ -121,6 +121,7 @@ class Soalmodel extends Model
         return $this->db->table('group_soal')
                         ->select('group_soal_id,group_nm')
                         ->where('status_cd','normal')
+                        ->whereNotIn('group_soal_id',[8,9])
                         // ->orderBy('urutan', 'ASC')
                         ->get();
     }
@@ -829,7 +830,7 @@ public function getAllSoalSK() {
                         ->where('a.materi',$materi)
                         ->where('a.created_user_id',$user_id)
                         ->whereIn('a.status_cd', ['normal','finish'])
-                        ->whereNotIn('a.group_id', [7,8])
+                        ->whereNotIn('a.group_id', [7,8,9])
                         ->groupBy('a.group_id')
                         // ->orderBy('c.urutan', 'ASC')
                         ->get();
@@ -861,7 +862,7 @@ public function getAllSoalSK() {
             ->where('a.materi',$materi)
             ->where('a.created_user_id',$user_id)
             // ->where('a.status_cd', 'finish')
-            ->whereNotIn('a.group_id',[8])
+            ->whereNotIn('a.group_id',[8,9])
             ->groupBy('c.group_soal_id, c.group_nm, b.pembahasan_img, b.soal_img, a.pilihan_nm, d.jawaban_nm, d.jawaban_img, b.kunci, e.jawaban_nm, e.jawaban_img, b.no_soal, b.pembahasan, b.soal_nm, b.materi')
             ->orderBy('c.group_soal_id', 'ASC')
             ->orderBy('b.no_soal', 'ASC')

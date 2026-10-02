@@ -289,18 +289,25 @@ $materi_nm = $materi_row ? $materi_row->materi_nm : '';
     <script src="<?= base_url() ?>/dist/js/adminlte.min.js"></script>
     <script src="<?= base_url() ?>/plugins/sweetalert2/sweetalert2.js"></script>
     <script>
-    var timers;
+    var timers = null;
+    var currentDetik = null;
+    var currentAjax = null;
+    var isPersiapanState = false;
     const materi_nm = "<?= $materi_nm ?>";
+
     $(document).ready(function() {
         setTimeout(() => {
             startujian("start","","","",<?= $request->uri->getSegment(4) ?>,0,1,<?= $request->uri->getSegment(3) ?>,1);
         }, 1000);
 
         $(document).on('keydown', function (e) {
-            if (e.keyCode >= 48 && e.keyCode <= 57) {
-                let angka = e.key;
+            let key = e.key;
+            if (e.keyCode >= 96 && e.keyCode <= 105) {
+                key = (e.keyCode - 96).toString();
+            }
+            if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)) {
                 let btn = $(".tombol_pauli").filter(function () {
-                    return $(this).text().trim() === angka;
+                    return $(this).text().trim() === key;
                 });
 
                 if (btn.length > 0) {
@@ -355,7 +362,27 @@ $materi_nm = $materi_row ? $materi_row->materi_nm : '';
     }
 
     function startujian(proc,pilihan_nm,jawaban_id,soal_id,group_id,no_soal,kolom_id,materi,sk_group_id) {
-        $.ajax({
+        // Jika waktu 00:00 dan user menekan tombol pilihan/tombol_pauli (proc === 'next'),
+        // ubah ke proc 'persiapan' untuk menyimpan jawaban terakhir dan lanjut ke kolom berikutnya
+        if (proc === "next" && (currentDetik !== null && currentDetik <= 0 || $("#countdown").text().trim() === "00:00")) {
+            proc = "persiapan";
+        }
+
+        // Jangan proses jika sedang dalam masa transisi persiapan
+        if (isPersiapanState && proc !== "nextkolom" && proc !== "selesai") {
+            return;
+        }
+
+        // Cegah request ganda atau batalkan request gantung saat beralih status
+        if (currentAjax && currentAjax.readyState !== 4) {
+            if (proc === "persiapan" || proc === "nextkolom" || proc === "selesai") {
+                currentAjax.abort();
+            } else {
+                return;
+            }
+        }
+
+        currentAjax = $.ajax({
             url: "<?= base_url('tryout/pauliujian') ?>",
             type: "post",
             dataType: "json",
@@ -373,9 +400,16 @@ $materi_nm = $materi_row ? $materi_row->materi_nm : '';
             beforeSend: function() {
             },
             success: function(data) {
+                console.log(timers);
+                
                 if (data.ret === "persiapan") {
+                    if (isPersiapanState) {
+                        return;
+                    }
+                    isPersiapanState = true;
                     window.clearInterval(timers);
                     timers = null;
+                    currentDetik = 0;
                     $("#lb_kolom").text("Persiapan . . .");
                     $("#dv_soal").html("");
                     countdown(2, data.kolom_id, data.sk_group_id, "persiapan");
@@ -383,6 +417,7 @@ $materi_nm = $materi_row ? $materi_row->materi_nm : '';
                 }
 
                 if (data.ret === "selesai") {
+                    isPersiapanState = false;
                     updateFinishRespon(
                         <?= $request->uri->getSegment(3) ?>,
                         <?= $request->uri->getSegment(4) ?>
@@ -390,12 +425,13 @@ $materi_nm = $materi_row ? $materi_row->materi_nm : '';
                     Swal.fire("Tes selesai", "Terima kasih", "success")
                     .then(() => {
                         window.location.href =
-                        "<?= base_url() ?>/tryout/hasiltryout/<?= $request->uri->getSegment(3) ?>/<?= $request->uri->getSegment(4) ?>";
+                        "<?= base_url() ?>/tryout/hasiltryoutPauli/<?= $request->uri->getSegment(3) ?>/<?= $request->uri->getSegment(4) ?>";
                     });
                     return;
                 }
 
                 if (data.ret === "ok") {
+                    isPersiapanState = false;
                     renderSoal(data);
 
                     let durasi = 60;
@@ -406,11 +442,14 @@ $materi_nm = $materi_row ? $materi_row->materi_nm : '';
                 }
 
                 if (data.ret === "soal_tidak_ada") {
-                    alert("Soal tidak ada");
+                    Swal.fire("Terjadi Kesalahan, Error Code : 102", "", "warning");
                 }
             },
-            error: function(e) {
-                alert(e.responseText);
+            error: function(xhr, status, errorThrown) {
+                if (status === "abort") {
+                    return;
+                }
+                Swal.fire("Terjadi Kesalahan, Error Code : 101", "", "warning");
             }
         });
     }
@@ -429,20 +468,34 @@ $materi_nm = $materi_row ? $materi_row->materi_nm : '';
     }
 
     function countdown(detik,kolom_id,sk_group_id,proc) {
-        var seconds = detik;
+        if (timers) {
+            window.clearInterval(timers);
+            timers = null;
+        }
+
+        var seconds = parseInt(detik);
+        currentDetik = seconds;
+        $("#countdown").text(convertSeconds(seconds));
+
         timers = window.setInterval(function() {
             myFunction();
         }, 1000);
 
         function myFunction() {
             seconds--;
-            $("#countdown").text(convertSeconds(seconds));
-            if (seconds === 0) {
+            currentDetik = seconds;
+            if (seconds >= 0) {
+                $("#countdown").text(convertSeconds(seconds));
+            }
+            if (seconds <= 0) {
                 window.clearInterval(timers);
+                timers = null;
+                currentDetik = 0;
+                $("#countdown").text("00:00");
                 if (proc == "persiapan") {
-                    kolom_id = kolom_id + 1;
+                    kolom_id = parseInt(kolom_id) + 1;
                     if (kolom_id == 21) {
-                        sk_group_id = sk_group_id + 1;
+                        sk_group_id = parseInt(sk_group_id) + 1;
                         kolom_id = 1;
                         if (sk_group_id == 5) {
                             startujian("selesai");

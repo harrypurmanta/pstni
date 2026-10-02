@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Bagian Psikologi Polda Sumsel</title>
+    <title>Bintang Timur Prestasi</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="<?= base_url() ?>/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>/bower_components/font-awesome/css/font-awesome.min.css">
@@ -26,19 +26,32 @@
                 <section class="content">
                     <div class="row">
                     <div class="col-md-12" style="display: flex;justify-content: center;margin-bottom:20px;">
-                                <h2><b>SIKAP KERJA</b></h2>
+                                <h2><b>PAULI</b></h2>
                             </div>
                         <div class="col-md-12">
                             <?php
-                                foreach ($group as $key) {
+                                $this->session = \Config\Services::session();
+                                $user_id = $this->session->user_id;
+                                $db = db_connect();
+                                foreach ($materi as $key) {
+
+                                    $query = $db->query("SELECT * FROM respon WHERE materi = $key->materi_id AND created_user_id = $user_id AND status_cd != 'nullified' AND group_id = 8")->getResultArray();
+                                    if (count($query)>0) {
+                                        // }
+                                        $click = base_url()."/tryout/hasiltryoutPauli/".$key->materi_id."/8";
+                                        $class_bg = "bg-green";
+                                    } else {
+                                        $click = base_url()."/materi/petunjukSoalPauli/".$key->materi_id."/8";
+                                        $class_bg = "bg-gray";
+                                    }
                             ?>
-                            <div class="col-lg-3" style="width: 20%;border-radius:10px;">
-                                <div class="small-box bg-gray" style="border-radius:10px;">
+                            <div class="col-lg-3" style="border-radius:10px;">
+                                <div class="small-box <?= $class_bg ?>" style="border-radius:10px;">
                                     <div class="inner text-center">
-                                        <h4><?= $key->sk_group_nm ?></h4>
+                                        <h3><?= str_replace('Materi', 'Pauli', $key->materi_nm) ?></h3>
                                     </div>
-                                    <a href="<?= base_url() ?>/sikapkerja/pilihansk/<?= $key->sk_group_id ?>" class="small-box-footer" style="color:black;">
-                                        More info <i class="fa fa-arrow-circle-right"></i>
+                                    <a href="<?= $click ?>" class="small-box-footer" style="color:black;">
+                                        Mulai <i class="fa fa-arrow-circle-right"></i>
                                     </a>
                                 </div>
                             </div>
@@ -57,5 +70,4 @@
     <script src="<?= base_url() ?>/dist/js/adminlte.min.js"></script>
     <script src="<?= base_url() ?>/dist/js/demo.js"></script>
 </body>
-
 </html>

@@ -706,6 +706,20 @@ $request = \Config\Services::request();
                     });
                 } else if (data.proc == "selesai") {
                     let grp_id = group_id + 1;
+                    console.log(grp_id);
+                    
+                    if (grp_id == 8) {
+                        updateFinishRespon(
+                            <?= $request->uri->getSegment(3) ?>,
+                            <?= $request->uri->getSegment(4) ?>
+                        );
+                        Swal.fire("Tes selesai", "Terima kasih", "success")
+                        .then(() => {
+                            window.location.href =
+                            "<?= base_url() ?>/tryout/hasiltryout/<?= $request->uri->getSegment(3) ?>/<?= $request->uri->getSegment(4) ?>";
+                        });
+                        return;
+                    }
                     window.location.href = "<?= base_url() ?>/materi/pilihanMateri/" + materi + "/" + grp_id;
                 } else {
                     if (data.no_soal == 1) {
@@ -782,7 +796,7 @@ $request = \Config\Services::request();
 
                     // 3. Build Button HTML (Tombol Next dihapus; hanya tampilkan Selesai jika di soal terakhir atau isian)
                     let buttonHtml = "";
-                    if (data.jumlah_jawab >= data.total_soal_count - 1 || data.no_soal == data.total_soal_count) {
+                    if (data.no_soal == data.total_soal_count) {
                         buttonHtml = `<button onclick='startujian("selesai")' class='btn btn-selesai-custom btn-block'><i class='fa fa-check-circle mr-1'></i> Selesai Ujian</button>`;
                     } else if (data.group_id == 7 && parseInt(data.no_soal) >= 11 && parseInt(data.no_soal) <= 20) {
                         buttonHtml = `<button onclick='startujian("next")' class='btn btn-primary btn-block'><i class='fa fa-arrow-right mr-1'></i> Lanjut</button>`;
@@ -854,6 +868,27 @@ $request = \Config\Services::request();
                 window.location.href = "<?= base_url() ?>/materi/pilihanMateri/" + materi + "/" + grp_id;
             }
         }
+    }
+
+    function updateFinishRespon(materi_id,group_id) {
+        $.ajax({
+            url: "<?= base_url('tryout/updateFinishRespon') ?>",
+            type: "post",
+            dataType: "json",
+            data: {
+                "materi_id": materi_id,
+                "group_id": group_id
+            },
+            beforeSend: function() {
+                $("#loader-wrapper").removeClass("d-none")
+            },
+            success: function(data) {
+                $("#loader-wrapper").addClass("d-none");
+            },
+            error: function() {
+                Swal.fire("Ada terjadi sesuatu, mohon hubungi administrator", "", "warning");
+            }
+        });
     }
     </script>
 </body>

@@ -25,6 +25,9 @@ $session = \Config\Services::session();
                                 <a href='".base_url()."/materi' class='nav-link'>Materi</a>
                             </li>
                             <li class='nav-item'>
+                                <a href='".base_url()."/materi/pauli' class='nav-link'>Pauli</a>
+                            </li>
+                            <li class='nav-item'>
                                 <a href='".base_url()."/keswa' class='nav-link'>Keswa</a>
                             </li>
                         </ul>

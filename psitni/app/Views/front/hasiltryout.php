@@ -400,7 +400,7 @@ $request = \Config\Services::request();
                                 </div>
 
                                 <div class="notice-info-box">
-                                    <i class="fa fa-info-circle mr-1" style="font-size: 16px;"></i> Catatan: Hasil Rorschach dan Pauli akan dikirimkan secara lengkap melalui email Anda.
+                                    <i class="fa fa-info-circle mr-1" style="font-size: 16px;"></i> Catatan: Hasil Rorschachi akan dikirimkan secara lengkap melalui email Anda.
                                 </div>
 
                                 <!-- Hidden chart and table elements for background processing -->
@@ -609,97 +609,97 @@ $request = \Config\Services::request();
     <script src="<?= base_url() ?>/plugins/sweetalert2/sweetalert2.js"></script>    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-    const chartInstances = {};
+    // const chartInstances = {};
 
-    const hasil = <?= json_encode($hasil ?? []) ?>;
+    // const hasil = <?= json_encode($hasil ?? []) ?>;
 
-    function buildLabelPer3Kolom(dataSk) {
-        const labels = [];
-        for (let i = 0; i < dataSk.length; i += 3) {
-            const start = dataSk[i].kolom_nm;
-            const end   = dataSk[Math.min(i + 2, dataSk.length - 1)].kolom_nm;
-            labels.push(`${start}-${end} ●`);
-        }
-        return labels;
-    }
+    // function buildLabelPer3Kolom(dataSk) {
+    //     const labels = [];
+    //     for (let i = 0; i < dataSk.length; i += 3) {
+    //         const start = dataSk[i].kolom_nm;
+    //         const end   = dataSk[Math.min(i + 2, dataSk.length - 1)].kolom_nm;
+    //         labels.push(`${start}-${end} ●`);
+    //     }
+    //     return labels;
+    // }
 
-    function buildDataPer3Kolom(dataSk) {
-        const values = [];
-        for (let i = 0; i < dataSk.length; i += 3) {
-            const chunk = dataSk.slice(i, i + 3);
-            values.push(
-                chunk.reduce((s, x) => s + parseInt(x.terjawab), 0)
-            );
-        }
-        return values;
-    }
+    // function buildDataPer3Kolom(dataSk) {
+    //     const values = [];
+    //     for (let i = 0; i < dataSk.length; i += 3) {
+    //         const chunk = dataSk.slice(i, i + 3);
+    //         values.push(
+    //             chunk.reduce((s, x) => s + parseInt(x.terjawab), 0)
+    //         );
+    //     }
+    //     return values;
+    // }
 
-    function renderChart(sk_group_id, mode = 'group') {
-        const dataSk = hasil[sk_group_id];
-        if (!dataSk) return;
+    // function renderChart(sk_group_id, mode = 'group') {
+    //     const dataSk = hasil[sk_group_id];
+    //     if (!dataSk) return;
 
-        const ctx = document.getElementById('chart_sk_' + sk_group_id).getContext('2d');
+    //     const ctx = document.getElementById('chart_sk_' + sk_group_id).getContext('2d');
 
-        if (chartInstances[sk_group_id]) {
-            chartInstances[sk_group_id].destroy();
-        }
+    //     if (chartInstances[sk_group_id]) {
+    //         chartInstances[sk_group_id].destroy();
+    //     }
 
-        let labels, datasets;
+    //     let labels, datasets;
 
-        if (mode === 'group') {
-            labels = buildLabelPer3Kolom(dataSk);
-            datasets = [{
-                label: 'Terjawab per 3 Kolom',
-                data: buildDataPer3Kolom(dataSk),
-                borderWidth: 3,
-                tension: 0.3
-            }];
-        } else {
-            labels = dataSk.map(i => i.kolom_nm);
-            datasets = [{
-                label: 'Terjawab per Kolom',
-                data: dataSk.map(i => parseInt(i.terjawab)),
-                borderWidth: 2,
-                tension: 0.3
-            }];
-        }
+    //     if (mode === 'group') {
+    //         labels = buildLabelPer3Kolom(dataSk);
+    //         datasets = [{
+    //             label: 'Terjawab per 3 Kolom',
+    //             data: buildDataPer3Kolom(dataSk),
+    //             borderWidth: 3,
+    //             tension: 0.3
+    //         }];
+    //     } else {
+    //         labels = dataSk.map(i => i.kolom_nm);
+    //         datasets = [{
+    //             label: 'Terjawab per Kolom',
+    //             data: dataSk.map(i => parseInt(i.terjawab)),
+    //             borderWidth: 2,
+    //             tension: 0.3
+    //         }];
+    //     }
 
-        chartInstances[sk_group_id] = new Chart(ctx, {
-            type: 'line',
-            data: { labels, datasets },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        min: 0,
-                        max: 60
-                    }
-                },
-                plugins: {
-                    legend: {
-                        onClick: (e, legendItem) => {
-                            const nextMode = legendItem.text.includes('3') ? 'group' : 'detail';
-                            renderChart(sk_group_id, nextMode);
-                        }
-                    }
-                }
-            }
-        });
-    }
+    //     chartInstances[sk_group_id] = new Chart(ctx, {
+    //         type: 'line',
+    //         data: { labels, datasets },
+    //         options: {
+    //             responsive: true,
+    //             maintainAspectRatio: false,
+    //             scales: {
+    //                 y: {
+    //                     min: 0,
+    //                     max: 60
+    //                 }
+    //             },
+    //             plugins: {
+    //                 legend: {
+    //                     onClick: (e, legendItem) => {
+    //                         const nextMode = legendItem.text.includes('3') ? 'group' : 'detail';
+    //                         renderChart(sk_group_id, nextMode);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }
 
-    for (let i = 1; i <= 4; i++) {
-        renderChart(i, 'group');
-    }
+    // for (let i = 1; i <= 4; i++) {
+    //     renderChart(i, 'group');
+    // }
 
-    document.getElementById('toggleMode')?.addEventListener('change', function () {
-        const mode = this.checked ? 'group' : 'detail';
-        document.getElementById('modeLabel').innerText = mode === 'group' ? 'Per 3 Kolom' : 'Detail Per Kolom';
+    // document.getElementById('toggleMode')?.addEventListener('change', function () {
+    //     const mode = this.checked ? 'group' : 'detail';
+    //     document.getElementById('modeLabel').innerText = mode === 'group' ? 'Per 3 Kolom' : 'Detail Per Kolom';
 
-        for (let i = 1; i <= 4; i++) {
-            renderChart(i, mode);
-        }
-    });
+    //     for (let i = 1; i <= 4; i++) {
+    //         renderChart(i, mode);
+    //     }
+    // });
 
     function kirimemail() {
         $("#loader-wrapper").show();
@@ -707,7 +707,7 @@ $request = \Config\Services::request();
         let group_id = <?= $request->uri->getSegment(4) ?? 0 ?>;
 
         setTimeout(() => {
-            const charts = getChartsBase64();
+            // const charts = getChartsBase64();
             $.ajax({
                 url: "<?= base_url('tryout/kirimemail') ?>",
                 type: "post",
@@ -715,10 +715,10 @@ $request = \Config\Services::request();
                 data: {
                     "group_id": group_id,
                     "materi": materi,
-                    "chart1": charts.chart_1,
-                    "chart2": charts.chart_2,
-                    "chart3": charts.chart_3,
-                    "chart4": charts.chart_4
+                    // "chart1": charts.chart_1,
+                    // "chart2": charts.chart_2,
+                    // "chart3": charts.chart_3,
+                    // "chart4": charts.chart_4
                 },
                 success: function(data) {
                     if (data && (data === true || data.status === "sukses")) {
@@ -749,16 +749,16 @@ $request = \Config\Services::request();
         }, 3000);
     }
 
-    function getChartsBase64() {
-        const charts = {};
-        for (let i = 1; i <= 4; i++) {
-            const canvas = document.getElementById('chart_sk_' + i);
-            if (canvas) {
-                charts['chart_' + i] = canvas.toDataURL("image/png");
-            }
-        }
-        return charts;
-    }
+    // function getChartsBase64() {
+    //     const charts = {};
+    //     for (let i = 1; i <= 4; i++) {
+    //         const canvas = document.getElementById('chart_sk_' + i);
+    //         if (canvas) {
+    //             charts['chart_' + i] = canvas.toDataURL("image/png");
+    //         }
+    //     }
+    //     return charts;
+    // }
     </script>
 </body>
 

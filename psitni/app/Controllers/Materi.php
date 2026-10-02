@@ -26,13 +26,34 @@ class Materi extends BaseController
         }
     }
 
+    public function pauli()
+    {
+        if ($this->session->get("user_nm") == "") {
+			return redirect('/');
+		} else {
+            $data = [
+                'materi' => $this->soalmodel->getjawAllJMateri()->getResult()
+            ];
+            return view('front/pauli/pauli',$data);
+        }
+    }
+
+    public function petunjukSoalPauli() {
+        $request = \Config\Services::request();
+        $data = [
+            'materi_id' => $request->uri->getSegment(3),
+            'group' => $this->soalmodel->getGroupByid($request->uri->getSegment(4))->getResult(),
+        ];
+
+        return view('front/pauli/petunjuksoal',$data);
+    }
+
     public function pilihanMateri() {
         $request = \Config\Services::request();
         $data = [
             'materi_id' => $request->uri->getSegment(3),
             'group' => $this->soalmodel->getGroupByid($request->uri->getSegment(4))->getResult(),
         ];
-        
 
         return view('front/pilihanmateri',$data);
     }
