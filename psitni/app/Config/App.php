@@ -26,7 +26,7 @@ class App extends BaseConfig
      */
     // public $baseURL = 'https://cat.bintangtimurprestasi.com/';
     // public $baseURL = 'http://192.168.1.10/kursus/public/';
-    public $baseURL = 'https://psitni.test:8443/';
+    public $baseURL = 'https://psitni.bintangtimurprestasi.com/';
 
     /**
      * --------------------------------------------------------------------------
