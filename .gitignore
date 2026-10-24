@@ -19,6 +19,8 @@ psitni/writable/uploads/*
 psitni/public/uploads/*
 !/public/uploads/.gitkeep
 images/*
+psitni/app/Config/App.php
+
 # === OS & Editor ===
 .DS_Store
 Thumbs.db

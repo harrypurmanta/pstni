@@ -706,7 +706,6 @@ $request = \Config\Services::request();
                     });
                 } else if (data.proc == "selesai") {
                     let grp_id = group_id + 1;
-                    alert(grp_id);
                     if (grp_id == 8) {
                         updateFinishRespon(
                             <?= $request->uri->getSegment(3) ?>,
@@ -737,7 +736,7 @@ $request = \Config\Services::request();
                     if (data.no_soal == 1) {
                         if (<?= $request->uri->getSegment(3) ?> == 11 || <?= $request->uri->getSegment(3) ?> == 12 || <?= $request->uri->getSegment(3) ?> == 13 || <?= $request->uri->getSegment(3) ?> == 14 || <?= $request->uri->getSegment(3) ?> == 15) {
                             window.clearInterval(timers);
-                            countdown(3600);
+                            countdown(60);
                         } else {
                             window.clearInterval(timers);
                             countdown(600);
@@ -882,7 +881,12 @@ $request = \Config\Services::request();
             $("#countdown").text(convertSeconds(seconds));
             if (seconds === 0) {
                 let grp_id = group_id + 1;
-                window.location.href = "<?= base_url() ?>/materi/pilihanMateri/" + materi + "/" + grp_id;
+                if (grp_id == 12) {
+                    window.location.href = "<?= base_url() ?>/tryout/hasiltryout/" + materi + "/" + group_id;
+                } else {
+                    window.location.href = "<?= base_url() ?>/materi/pilihanMateri/" + materi + "/" + grp_id;
+                }
+                
             }
         }
     }
