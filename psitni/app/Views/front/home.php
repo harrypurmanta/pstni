@@ -25,14 +25,6 @@
                 <section class="content">
                     <div class="callout callout-info">
                         <h4>Selamat Datang di Bintang Timur Prestasi</h4>
-                        <p>BIMBEL CAT 100% FULL KOMPUTER
-                            Selain di kota PALEMBANG, Kita pun hadir di kota besar seperti SEKAYU, LAHAT, LUBUK LINGGAU
-                            DAN Kota METRO LAMPUNG</p>
-                        <p>Yayasan yang bergerak pada Bimbingan belajar yang berbasis Simulasi CAT dan 100% Full
-                            Komputer. Berdiri pada Tahun 2022 dengan tujuan untuk memperkenalkan Metode belajar berbasir
-                            komputer atau CAT. Metode yang diberikan adalah langsung praktik belajar di komputer.
-                            Jadi bagi adik-adik yang tidak memiliki Laptop atau Komputer dirumah tidak perlu merasa
-                            khawatir lagi, di Bintang Timur Prestasi sudah disiapkan.</p>
                     </div>
                 </section>
             </div>
