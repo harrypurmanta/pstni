@@ -43,6 +43,8 @@
                                     } else {
                                         if ($key->materi_id == 1) {
                                             $click = base_url()."/materi/riwayathidup/".$key->materi_id."/1";
+                                        } else if ($key->materi_id == 11 || $key->materi_id == 12 || $key->materi_id == 13 || $key->materi_id == 14 || $key->materi_id == 15) {
+                                            $click = base_url()."/materi/pilihanMateri/".$key->materi_id."/11";
                                         } else {
                                             $click = base_url()."/materi/pilihanMateri/".$key->materi_id."/1";
                                         }

@@ -18,7 +18,7 @@ psitni/writable/uploads/*
 # === User Uploads (optional) ===
 psitni/public/uploads/*
 !/public/uploads/.gitkeep
-
+images/*
 # === OS & Editor ===
 .DS_Store
 Thumbs.db

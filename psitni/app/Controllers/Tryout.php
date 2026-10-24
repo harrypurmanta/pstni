@@ -42,7 +42,12 @@ class Tryout extends BaseController
 
         $request = \Config\Services::request();
         $materi_id = $request->uri->getSegment(3);
-        $data['group'] = $this->soalmodel->getGroup()->getResult();
+        if ($request->uri->getSegment(4) == 11 || $request->uri->getSegment(4) == 12 || $request->uri->getSegment(4) == 13 || $request->uri->getSegment(4) == 14 || $request->uri->getSegment(4) == 15) {
+            $data['group'] = $this->soalmodel->getGroupByid($request->uri->getSegment(4))->getResult();
+        } else {
+            $data['group'] = $this->soalmodel->getGroup()->getResult();
+        }
+        
         if ($request->uri->getSegment(4) == 8) {
             $kolom_id = 1;
         } else {

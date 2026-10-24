@@ -706,9 +706,21 @@ $request = \Config\Services::request();
                     });
                 } else if (data.proc == "selesai") {
                     let grp_id = group_id + 1;
-                    console.log(grp_id);
-                    
+                    alert(grp_id);
                     if (grp_id == 8) {
+                        updateFinishRespon(
+                            <?= $request->uri->getSegment(3) ?>,
+                            <?= $request->uri->getSegment(4) ?>
+                        );
+                        Swal.fire("Tes selesai", "Terima kasih", "success")
+                        .then(() => {
+                            window.location.href =
+                            "<?= base_url() ?>/tryout/hasiltryout/<?= $request->uri->getSegment(3) ?>/<?= $request->uri->getSegment(4) ?>";
+                        });
+                        return;
+                    }
+
+                    if (grp_id == 12) {
                         updateFinishRespon(
                             <?= $request->uri->getSegment(3) ?>,
                             <?= $request->uri->getSegment(4) ?>
@@ -723,8 +735,13 @@ $request = \Config\Services::request();
                     window.location.href = "<?= base_url() ?>/materi/pilihanMateri/" + materi + "/" + grp_id;
                 } else {
                     if (data.no_soal == 1) {
-                        window.clearInterval(timers);
-                        countdown(600);
+                        if (<?= $request->uri->getSegment(3) ?> == 11 || <?= $request->uri->getSegment(3) ?> == 12 || <?= $request->uri->getSegment(3) ?> == 13 || <?= $request->uri->getSegment(3) ?> == 14 || <?= $request->uri->getSegment(3) ?> == 15) {
+                            window.clearInterval(timers);
+                            countdown(3600);
+                        } else {
+                            window.clearInterval(timers);
+                            countdown(600);
+                        }
                     }
 
                     $("#inp_soal_id").val(data.soal_id);

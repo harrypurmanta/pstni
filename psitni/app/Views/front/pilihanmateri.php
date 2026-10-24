@@ -286,7 +286,7 @@
                     </div>
 
                     <?php
-                        if ($group[0]->group_soal_id == 1) {
+                        if ($group[0]->group_soal_id == 1|| $group[0]->group_soal_id == 11 || $group[0]->group_soal_id == 12 || $group[0]->group_soal_id == 13 || $group[0]->group_soal_id == 14 || $group[0]->group_soal_id == 15) {
                             echo "<a onclick='showtoken(".$group[0]->group_soal_id.", ".$materi_id.")' href='javascript:void(0)' class='btn-start-exam'><i class='fa fa-play-circle mr-2'></i> Mulai Ujian</a>";
                         } else {
                             if ($group[0]->group_soal_id == 8) {
