@@ -28,3 +28,7 @@ Thumbs.db
 # === Test & Temp ===
 *.log
 *.tmp
+
+images
+
+psitni/app/*
