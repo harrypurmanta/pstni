@@ -736,7 +736,7 @@ $request = \Config\Services::request();
                     if (data.no_soal == 1) {
                         if (<?= $request->uri->getSegment(3) ?> == 11 || <?= $request->uri->getSegment(3) ?> == 12 || <?= $request->uri->getSegment(3) ?> == 13 || <?= $request->uri->getSegment(3) ?> == 14 || <?= $request->uri->getSegment(3) ?> == 15) {
                             window.clearInterval(timers);
-                            countdown(60);
+                            countdown(3600);
                         } else {
                             window.clearInterval(timers);
                             countdown(600);

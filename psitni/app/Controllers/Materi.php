@@ -32,7 +32,7 @@ class Materi extends BaseController
 			return redirect('/');
 		} else {
             $data = [
-                'materi' => $this->soalmodel->getjawAllJMateri()->getResult()
+                'materi' => $this->soalmodel->getMateriPauli()->getResult()
             ];
             return view('front/pauli/pauli',$data);
         }

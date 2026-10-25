@@ -69,6 +69,15 @@ class Soalmodel extends Model
                         ->select('*')
                         ->where('status_cd','normal')
                         ->whereNotIn('materi_nm',["Sikap Kerja","Latihan","Keswa 1"])
+                        // ->whereNotIn('materi_id',[11, 12, 13, 14, 15, 90, 98, 99])
+                        ->get();
+    }
+
+    public function getMateriPauli() {
+        return $this->db->table('materi')
+                        ->select('*')
+                        ->where('status_cd','normal')
+                        ->whereNotIn('materi_nm',["Sikap Kerja","Latihan","Keswa 1"])
                         ->whereNotIn('materi_id',[11, 12, 13, 14, 15, 90, 98, 99])
                         ->get();
     }
